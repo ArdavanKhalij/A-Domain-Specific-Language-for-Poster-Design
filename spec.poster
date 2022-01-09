@@ -1,0 +1,41 @@
+poster:
+  dimensions: 25x35
+  filename: "volcano.html"
+title:
+  position: top-edge
+  width: 100%
+  content: "Volcanoes"
+section:
+  position: left-edge
+  content: "Definition"
+  ref: "definition"
+text:
+  content: "A volcano is a rupture in the crust of a planetary-mass object, such as Earth, that allows hot lava, volcanic ash, and gases to escape from a magma chamber below the surface."
+  adjacency: below "definition"
+section:
+  position: right-edge
+  content: "Location"
+  ref: "location"
+text:
+  content: "On Earth, volcanoes are most often found where tectonic plates are diverging or converging, and most are found underwater."
+  adjacency: below "location"
+figure:
+  source: "volcano_locations.png"
+  position: right-edge
+  ref: "locations"
+  width: 50%
+caption:
+  content: "Map showing the divergent plate boundaries (oceanic spreading ridges) and recent sub-aerial volcanoes (mostly at convergent boundaries)."
+  adjacency: below "locations"
+image:
+  source: "lava.jpg"
+  ref: "lava"
+  position: left-edge
+  width: 50%
+caption:
+  content: "Fountain of lava erupting from a volcanic cone in Hawaii, 1983."
+  adjacency: below "lava"
+text:
+  content: "Information taken from the Volcano Wikipedia page"
+  position: bottom-edge
+  height: 5%
