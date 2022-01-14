@@ -16,4 +16,6 @@ to_integer(WidthxHeight, Width, Height):-
 dimensions_command(Width, Height) --> ['\t', dimensions, :, WidthxHeight], {to_integer(WidthxHeight, Width, Height)}.
 % filename property
 filename_command(FileName) --> ['\t', filename, :, '"',  FileName, '"'].
+% content property
+content_command(Content) --> ['\t', content, :, '"'|Content], ['"'].
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
