@@ -41,4 +41,6 @@ size_command(Width, Height) --> ['\t', size, :, WidthxHeight, '\n'], {to_integer
 %    split_string(Www, "%", "", [Ww,_]),
 %    atom_number(Ww, W).
 width_command(Width) --> ['\t', width, :, Width, '\n'].
+% height property
+height_command(Height) --> ['\t', height, :, Height, '\n'].
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
