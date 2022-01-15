@@ -22,14 +22,14 @@ content_command(Content) --> ['\t', content, :, '"'|Content], ['"', '\n'].
 source_command(Source) --> ['\t', source, :, '"', Source, '"', '\n'].
 % position property
 % All available positions
-available_position(top-edge).
-available_position(bottom-edge).
-available_position(left-edge).
-available_position(right-edge).
-available_position(top-left).
-available_position(top-right).
-available_position(bottom-left).
-available_position(bottom-right).
+available_position('top-edge').
+available_position('bottom-edge').
+available_position('left-edge').
+available_position('right-edge').
+available_position('top-left').
+available_position('top-right').
+available_position('bottom-left').
+available_position('bottom-right').
 position_command(Position) --> ['\t', position, :, Position, '\n'], {available_position(Position)}.
 % aspect property
 aspect_command(Width, Height) --> ['\t', aspect, :, WidthxHeight, '\n'], {to_integer(WidthxHeight, Width, Height)}.
@@ -78,6 +78,32 @@ properties([adjacency_command, Adjacency]) --> adjacency_command(Adjacency).
 % asset types
 % poster top-level asset: This asset is a top-level asset and it only needs two properties and they are mandatory,
 % dimensions and filename. So it can have only these two properties and it should have these two properties.
-poster_command([ListOfProperties1, ListOfProperties2]) -->
-               [poster, :, '\n'], properties_poster(ListOfProperties1), properties_poster(ListOfProperties2).
+poster_command([Property1, Property2]) -->
+               [poster, :, '\n'], properties_poster(Property1), properties_poster(Property2).
+% figure with at least one and maximum 9 properties
+figure_command([Property1]) --> [figure, :, '\n'], properties(Property1).
+figure_command([Property1, Property2]) -->
+               [figure, :, '\n'], properties(Property1), properties(Property2).
+figure_command([Property1, Property2, Property3]) -->
+               [figure, :, '\n'], properties(Property1), properties(Property2), properties(Property3).
+figure_command([Property1, Property2, Property3, Property4]) -->
+               [figure, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4).
+figure_command([Property1, Property2, Property3, Property4, Property5]) -->
+               [figure, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5).
+figure_command([Property1, Property2, Property3, Property4, Property5, Property6]) -->
+               [figure, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5), properties(Property6).
+figure_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7]) -->
+               [figure, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5), properties(Property6), properties(Property7).
+figure_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7, Property8]) -->
+               [figure, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5), properties(Property6), properties(Property7),
+               properties(Property8).
+figure_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7, Property8, Property9]) -->
+               [figure, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5), properties(Property6), properties(Property7),
+               properties(Property8), properties(Property9).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
