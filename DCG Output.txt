@@ -1,0 +1,54 @@
+[
+    poster_command, [
+        [dimensions_command, 25, 35], 
+        [filename_command, 'volcano.html']
+    ], 
+    title_command, [
+        [position_command, 'top-edge'], 
+        [width_command_percent, 100], 
+        [content_command, 'Volcanoes']
+    ], 
+    section_command, [
+        [position_command, 'left-edge'], 
+        [content_command, 'Definition'], 
+        [ref_command, definition]
+    ], 
+    text_command, [
+        [content_command, 'A volcano is a rupture in the crust of a planetary-mass object, such as Earth, that allows hot lava, volcanic ash, and gases to escape from a magma chamber below the surface.'], 
+        [adjacency_command, below, definition]
+    ], 
+    section_command, [
+        [position_command, 'right-edge'], 
+        [content_command, 'Location'], 
+        [ref_command, location]
+    ], 
+    text_command, [
+        [content_command, 'On Earth, volcanoes are most often found where tectonic plates are diverging or converging, and most are found underwater.'], 
+        [adjacency_command, below, location]
+    ], 
+    figure_command, [
+        [source_command, 'volcano_locations.png'], 
+        [position_command, 'right-edge'], 
+        [ref_command, locations], 
+        [width_command_percent, 50]
+    ],
+    caption_command, [
+        [content_command, 'Map showing the divergent plate boundaries (oceanic spreading ridges) and recent sub-aerial volcanoes (mostly at convergent boundaries).'], 
+        [adjacency_command, below, locations]
+    ], 
+    image_command, [
+        [source_command, 'lava.jpg'], 
+        [ref_command, lava], 
+        [position_command, 'left-edge'], 
+        [width_command_percent, 50]
+    ],
+    caption_command, [
+        [content_command, 'Fountain of lava erupting from a volcanic cone in Hawaii, 1983.'],
+        [adjacency_command, below, lava]
+    ], 
+    text_command, [
+        [content_command, 'Information taken from the Volcano Wikipedia page'],
+        [position_command, 'bottom-edge'], 
+        [height_command_percent, 5]
+    ]
+]
