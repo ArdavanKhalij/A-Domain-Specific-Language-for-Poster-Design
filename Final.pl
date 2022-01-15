@@ -187,4 +187,30 @@ caption_command([Property1, Property2, Property3, Property4, Property5, Property
                [caption, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
                properties(Property4), properties(Property5), properties(Property6), properties(Property7),
                properties(Property8), properties(Property9).
+% title with at least one and maximum 9 properties
+title_command([Property1]) --> [title, :, '\n'], properties(Property1).
+title_command([Property1, Property2]) -->
+               [title, :, '\n'], properties(Property1), properties(Property2).
+title_command([Property1, Property2, Property3]) -->
+               [title, :, '\n'], properties(Property1), properties(Property2), properties(Property3).
+title_command([Property1, Property2, Property3, Property4]) -->
+               [title, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4).
+title_command([Property1, Property2, Property3, Property4, Property5]) -->
+               [title, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5).
+title_command([Property1, Property2, Property3, Property4, Property5, Property6]) -->
+               [title, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5), properties(Property6).
+title_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7]) -->
+               [title, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5), properties(Property6), properties(Property7).
+title_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7, Property8]) -->
+               [title, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5), properties(Property6), properties(Property7),
+               properties(Property8).
+title_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7, Property8, Property9]) -->
+               [title, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5), properties(Property6), properties(Property7),
+               properties(Property8), properties(Property9).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
