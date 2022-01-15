@@ -43,4 +43,6 @@ size_command(Width, Height) --> ['\t', size, :, WidthxHeight, '\n'], {to_integer
 width_command(Width) --> ['\t', width, :, Width, '\n'].
 % height property
 height_command(Height) --> ['\t', height, :, Height, '\n'].
+% ref property
+ref_command(Ref) --> ['\t', ref, :, '"'|Ref], ['"', '\n'].
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
