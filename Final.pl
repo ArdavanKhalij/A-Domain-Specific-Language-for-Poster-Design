@@ -17,7 +17,7 @@ dimensions_command(Row, Cols) --> ['\t', dimensions, :, WidthxHeight, '\n'], {to
 % filename property
 filename_command(FileName) --> ['\t', filename, :, '"',  FileName, '"', '\n'].
 % content property
-content_command(Content) --> ['\t', content, :, '"'|Content], ['"', '\n'].
+content_command(Content) --> ['\t', content, :, '"'|Content], ['"', '\n'], {\+member('\n', Content)}.
 % image property
 source_command(Source) --> ['\t', source, :, '"', Source, '"', '\n'].
 % position property
@@ -42,23 +42,26 @@ to_integer_percent(Output, Input):-
     atom_string(Input, InputString),
     split_string(InputString, "%", "", [InputStringWithoutPercent,_]),
     atom_number(InputStringWithoutPercent, Output).
-width_command_percent(Width) --> ['\t', width, :, WidthWithPercent, '\n'], {to_integer_percent(Width, WidthWithPercent)}.
+width_command_percent(Width) --> ['\t', width, :, WidthWithPercent, '\n'],
+                                 {to_integer_percent(Width, WidthWithPercent)}.
 % absolute width
 width_command_absolute(Width) --> ['\t', width, :, WidthAtom, '\n'], {atom_number(WidthAtom, Width)}.
 % height property
 % percent height
-height_command_percent(Height) --> ['\t', height, :, HeightWithPercent, '\n'], {to_integer_percent(Height, HeightWithPercent)}.
+height_command_percent(Height) --> ['\t', height, :, HeightWithPercent, '\n'],
+                                   {to_integer_percent(Height, HeightWithPercent)}.
 % absolute height
 height_command_absolute(Height) --> ['\t', height, :, HeightAtom, '\n'], {atom_number(HeightAtom, Height)}.
 % ref property
-ref_command(Ref) --> ['\t', ref, :, '"'|Ref], ['"', '\n'].
+ref_command(Ref) --> ['\t', ref, :, '"'|Ref], ['"', '\n'], {\+member('\n', Ref)}.
 % adjacency property
 % All available adjacency
 available_adjacency(above).
 available_adjacency(below).
 available_adjacency(leftof).
 available_adjacency(rightof).
-adjacency_command(Adjacency) --> ['\t', adjacency, :, Adjacency, '\n'], {available_adjacency(Adjacency)}.
+adjacency_command(Adjacency, Ref) --> ['\t', adjacency, :, Adjacency, '"'|Ref], ['"', '\n'],
+                                      {available_adjacency(Adjacency), \+member('\n', Ref)}.
 % Command of all top-level properties that returns the property name and its output arguments
 properties_poster([dimensions_command, Row, Cols]) --> dimensions_command(Row, Cols).
 properties_poster([filename_command, FileName]) --> filename_command(FileName).
@@ -73,7 +76,7 @@ properties([width_command_absolute, Width]) --> width_command_absolute(Width).
 properties([height_command_percent, Height]) --> height_command_percent(Height).
 properties([height_command_absolute, Height]) --> height_command_absolute(Height).
 properties([ref_command, Ref]) --> ref_command(Ref).
-properties([adjacency_command, Adjacency]) --> adjacency_command(Adjacency).
+properties([adjacency_command, Adjacency, RefName]) --> adjacency_command(Adjacency, RefName).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % asset types
 % poster top-level asset: This asset is a top-level asset and it only needs two properties and they are mandatory,
@@ -156,6 +159,32 @@ text_command([Property1, Property2, Property3, Property4, Property5, Property6, 
                properties(Property8).
 text_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7, Property8, Property9]) -->
                [text, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5), properties(Property6), properties(Property7),
+               properties(Property8), properties(Property9).
+% caption with at least one and maximum 9 properties
+caption_command([Property1]) --> [caption, :, '\n'], properties(Property1).
+caption_command([Property1, Property2]) -->
+               [caption, :, '\n'], properties(Property1), properties(Property2).
+caption_command([Property1, Property2, Property3]) -->
+               [caption, :, '\n'], properties(Property1), properties(Property2), properties(Property3).
+caption_command([Property1, Property2, Property3, Property4]) -->
+               [caption, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4).
+caption_command([Property1, Property2, Property3, Property4, Property5]) -->
+               [caption, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5).
+caption_command([Property1, Property2, Property3, Property4, Property5, Property6]) -->
+               [caption, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5), properties(Property6).
+caption_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7]) -->
+               [caption, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5), properties(Property6), properties(Property7).
+caption_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7, Property8]) -->
+               [caption, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5), properties(Property6), properties(Property7),
+               properties(Property8).
+caption_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7, Property8, Property9]) -->
+               [caption, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
                properties(Property4), properties(Property5), properties(Property6), properties(Property7),
                properties(Property8), properties(Property9).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
