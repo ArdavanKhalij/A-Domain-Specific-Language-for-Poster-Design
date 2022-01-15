@@ -326,7 +326,7 @@ dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, 
     asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
     assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
     assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11), assets(Asset12, Result12),
-    assets(Asset13, Result13), assets(Asset14, Result14), assets(Asset15, Result15), assets(Asset16, Result16), 
+    assets(Asset13, Result13), assets(Asset14, Result14), assets(Asset15, Result15), assets(Asset16, Result16),
     assets(Asset17, Result17).
 dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
     Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10, Asset11, Result11, Asset12, Result12, Asset13,
@@ -334,26 +334,56 @@ dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, 
     asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
     assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
     assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11), assets(Asset12, Result12),
-    assets(Asset13, Result13), assets(Asset14, Result14), assets(Asset15, Result15), assets(Asset16, Result16), 
+    assets(Asset13, Result13), assets(Asset14, Result14), assets(Asset15, Result15), assets(Asset16, Result16),
     assets(Asset17, Result17), assets(Asset18, Result18).
 dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
     Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10, Asset11, Result11, Asset12, Result12, Asset13,
-    Result13, Asset14, Result14, Asset15, Result15, Asset16, Result16, Asset17, Result17, Asset18, Result18, Asset19, 
+    Result13, Asset14, Result14, Asset15, Result15, Asset16, Result16, Asset17, Result17, Asset18, Result18, Asset19,
     Result19]) -->
     asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
     assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
     assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11), assets(Asset12, Result12),
-    assets(Asset13, Result13), assets(Asset14, Result14), assets(Asset15, Result15), assets(Asset16, Result16), 
+    assets(Asset13, Result13), assets(Asset14, Result14), assets(Asset15, Result15), assets(Asset16, Result16),
     assets(Asset17, Result17), assets(Asset18, Result18), assets(Asset19, Result19).
 dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
     Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10, Asset11, Result11, Asset12, Result12, Asset13,
-    Result13, Asset14, Result14, Asset15, Result15, Asset16, Result16, Asset17, Result17, Asset18, Result18, Asset19, 
+    Result13, Asset14, Result14, Asset15, Result15, Asset16, Result16, Asset17, Result17, Asset18, Result18, Asset19,
     Result19, Asset20, Result20]) -->
     asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
     assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
     assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11), assets(Asset12, Result12),
-    assets(Asset13, Result13), assets(Asset14, Result14), assets(Asset15, Result15), assets(Asset16, Result16), 
+    assets(Asset13, Result13), assets(Asset14, Result14), assets(Asset15, Result15), assets(Asset16, Result16),
     assets(Asset17, Result17), assets(Asset18, Result18), assets(Asset19, Result19), assets(Asset20, Result20).
+dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
+    Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10, Asset11, Result11, Asset12, Result12, Asset13,
+    Result13, Asset14, Result14, Asset15, Result15, Asset16, Result16, Asset17, Result17, Asset18, Result18, Asset19,
+    Result19, Asset20, Result20, Asset21, Result21]) -->
+    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
+    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
+    assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11), assets(Asset12, Result12),
+    assets(Asset13, Result13), assets(Asset14, Result14), assets(Asset15, Result15), assets(Asset16, Result16),
+    assets(Asset17, Result17), assets(Asset18, Result18), assets(Asset19, Result19), assets(Asset20, Result20),
+    assets(Asset21, Result21).
+dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
+    Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10, Asset11, Result11, Asset12, Result12, Asset13,
+    Result13, Asset14, Result14, Asset15, Result15, Asset16, Result16, Asset17, Result17, Asset18, Result18, Asset19,
+    Result19, Asset20, Result20, Asset21, Result21, Asset22, Result22]) -->
+    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
+    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
+    assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11), assets(Asset12, Result12),
+    assets(Asset13, Result13), assets(Asset14, Result14), assets(Asset15, Result15), assets(Asset16, Result16),
+    assets(Asset17, Result17), assets(Asset18, Result18), assets(Asset19, Result19), assets(Asset20, Result20),
+    assets(Asset21, Result21), assets(Asset22, Result22).
+dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
+    Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10, Asset11, Result11, Asset12, Result12, Asset13,
+    Result13, Asset14, Result14, Asset15, Result15, Asset16, Result16, Asset17, Result17, Asset18, Result18, Asset19,
+    Result19, Asset20, Result20, Asset21, Result21, Asset22, Result22, Asset23, Result23]) -->
+    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
+    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
+    assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11), assets(Asset12, Result12),
+    assets(Asset13, Result13), assets(Asset14, Result14), assets(Asset15, Result15), assets(Asset16, Result16),
+    assets(Asset17, Result17), assets(Asset18, Result18), assets(Asset19, Result19), assets(Asset20, Result20),
+    assets(Asset21, Result21), assets(Asset22, Result22), assets(Asset23, Result23).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Info is the compelete parsed information
 run_dcg(File, Atoms, Info):-
