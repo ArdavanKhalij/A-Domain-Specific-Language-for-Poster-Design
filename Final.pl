@@ -35,4 +35,10 @@ position_command(Position) --> ['\t', position, :, Position, '\n'], {available_p
 aspect_command(Width, Height) --> ['\t', aspect, :, WidthxHeight, '\n'], {to_integer(WidthxHeight, Width, Height)}.
 % size property
 size_command(Width, Height) --> ['\t', size, :, WidthxHeight, '\n'], {to_integer(WidthxHeight, Width, Height)}.
+% width property
+%to_integer_percent(WAsANumber, Width):-
+%    atom_string(Width, Www),
+%    split_string(Www, "%", "", [Ww,_]),
+%    atom_number(Ww, W).
+width_command(Width) --> ['\t', width, :, Width, '\n'].
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
