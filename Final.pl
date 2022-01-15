@@ -33,4 +33,6 @@ available_position(bottom-right).
 position_command(Position) --> ['\t', position, :, Position, '\n'], {available_position(Position)}.
 % aspect property
 aspect_command(Width, Height) --> ['\t', aspect, :, WidthxHeight, '\n'], {to_integer(WidthxHeight, Width, Height)}.
+% size property
+size_command(Width, Height) --> ['\t', size, :, WidthxHeight, '\n'], {to_integer(WidthxHeight, Width, Height)}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
