@@ -36,19 +36,41 @@ aspect_command(Width, Height) --> ['\t', aspect, :, WidthxHeight, '\n'], {to_int
 % size property
 size_command(Width, Height) --> ['\t', size, :, WidthxHeight, '\n'], {to_integer(WidthxHeight, Width, Height)}.
 % width property
-%to_integer_percent(WAsANumber, Width):-
-%    atom_string(Width, Www),
-%    split_string(Www, "%", "", [Ww,_]),
-%    atom_number(Ww, W).
-width_command(Width) --> ['\t', width, :, Width, '\n'].
+% percent width
+% convert the number and percent sign to only a number
+to_integer_percent(Output, Input):-
+    atom_string(Input, InputString),
+    split_string(InputString, "%", "", [InputStringWithoutPercent,_]),
+    atom_number(InputStringWithoutPercent, Output).
+width_command_percent(Width) --> ['\t', width, :, WidthWithPercent, '\n'], {to_integer_percent(Width, WidthWithPercent)}.
+% absolute width
+width_command_absolute(Width) --> ['\t', width, :, WidthAtom, '\n'], {atom_number(WidthAtom, Width)}.
 % height property
-height_command(Height) --> ['\t', height, :, Height, '\n'].
+% percent height
+height_command_percent(Height) --> ['\t', height, :, HeightWithPercent, '\n'], {to_integer_percent(Height, HeightWithPercent)}.
+% absolute height
+height_command_absolute(Height) --> ['\t', height, :, HeightAtom, '\n'], {atom_number(HeightAtom, Height)}.
 % ref property
 ref_command(Ref) --> ['\t', ref, :, '"'|Ref], ['"', '\n'].
 % adjacency property
+% All available adjacency
 available_adjacency(above).
 available_adjacency(below).
 available_adjacency(leftof).
 available_adjacency(rightof).
 adjacency_command(Adjacency) --> ['\t', adjacency, :, Adjacency, '\n'], {available_adjacency(Adjacency)}.
+% command of all properties that returns the property name and its output arguments
+properties([dimensions_command, Row, Cols]) --> dimensions_command(Row, Cols).
+properties([filename_command, FileName]) --> filename_command(FileName).
+properties([content_command, Content]) --> content_command(Content).
+properties([source_command, Source]) --> source_command(Source).
+properties([position_command, Position]) --> position_command(Position).
+properties([aspect_command, Width, Height]) --> aspect_command(Width, Height).
+properties([size_command, Width, Height]) --> size_command(Width, Height).
+properties([width_command_percent, Width]) --> width_command_percent(Width).
+properties([width_command_absolute, Width]) --> width_command_absolute(Width).
+properties([height_command_percent, Height]) --> height_command_percent(Height).
+properties([height_command_absolute, Height]) --> height_command_absolute(Height).
+properties([ref_command, Ref]) --> ref_command(Ref).
+properties([adjacency_command, Adjacency]) --> adjacency_command(Adjacency).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
