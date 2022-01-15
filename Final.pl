@@ -66,7 +66,7 @@ adjacency_command(Adjacency, Ref) --> ['\n', '\t', adjacency, :, Adjacency, '"'|
 properties_poster([dimensions_command, Row, Cols]) --> dimensions_command(Row, Cols).
 properties_poster([filename_command, FileName]) --> filename_command(FileName).
 % Command of all properties that returns the property name and its output arguments
-properties([content_command, Content]) --> content_command(Content).
+properties([content_command, Content]) --> content_command(Contents), {atomic_list_concat(Contents,' ',Content)}.
 properties([source_command, Source]) --> source_command(Source).
 properties([position_command, Position]) --> position_command(Position).
 properties([aspect_command, Width, Height]) --> aspect_command(Width, Height).
@@ -75,14 +75,15 @@ properties([width_command_percent, Width]) --> width_command_percent(Width).
 properties([width_command_absolute, Width]) --> width_command_absolute(Width).
 properties([height_command_percent, Height]) --> height_command_percent(Height).
 properties([height_command_absolute, Height]) --> height_command_absolute(Height).
-properties([ref_command, Ref]) --> ref_command(Ref).
-properties([adjacency_command, Adjacency, RefName]) --> adjacency_command(Adjacency, RefName).
+properties([ref_command, Ref]) --> ref_command(Refs), {atomic_list_concat(Refs,' ',Ref)}.
+properties([adjacency_command, Adjacency, Ref]) --> adjacency_command(Adjacency, RefName),
+    {atomic_list_concat(RefName,' ',Ref)}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % asset types
 % poster top-level asset: This asset is a top-level asset and it only needs two properties and they are mandatory,
 % dimensions and filename. So it can have only these two properties and it should have these two properties.
 poster_command([Property1, Property2]) -->
-               ['\n', poster, :], properties_poster(Property1), properties_poster(Property2).
+               [poster, :], properties_poster(Property1), properties_poster(Property2).
 % figure with at least one and maximum 9 properties
 figure_command([Property1]) --> ['\n', figure, :], properties(Property1).
 figure_command([Property1, Property2]) -->
@@ -240,3 +241,85 @@ section_command([Property1, Property2, Property3, Property4, Property5, Property
                properties(Property4), properties(Property5), properties(Property6), properties(Property7),
                properties(Property8), properties(Property9).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% combine the assets: poster should be always at first
+asset1(poster_command, Result) --> poster_command(Result).
+assets(figure_command, Result) --> figure_command(Result).
+assets(image_command, Result) --> image_command(Result).
+assets(text_command, Result) --> text_command(Result).
+assets(caption_command, Result) --> caption_command(Result).
+assets(title_command, Result) --> title_command(Result).
+assets(section_command, Result) --> section_command(Result).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The compelete parser
+dcg_parser([Asset1, Result1]) --> asset1(Asset1, Result1).
+dcg_parser([Asset1, Result1, Asset2, Result2]) -->
+    asset1(Asset1, Result1), assets(Asset2, Result2).
+dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3]) -->
+    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3).
+dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4]) -->
+    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4).
+dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5]) -->
+    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
+    assets(Asset5, Result5).
+dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6]) -->
+    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
+    assets(Asset5, Result5), assets(Asset6, Result6).
+dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
+    Result7]) -->
+    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
+    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7).
+dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
+    Result7, Asset8, Result8]) -->
+    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
+    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8).
+dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
+    Result7, Asset8, Result8, Asset9, Result9]) -->
+    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
+    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
+    assets(Asset9, Result9).
+dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
+    Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10]) -->
+    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
+    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
+    assets(Asset9, Result9), assets(Asset10, Result10).
+dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
+    Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10, Asset11, Result11]) -->
+    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
+    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
+    assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11).
+dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
+    Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10, Asset11, Result11, Asset12, Result12]) -->
+    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
+    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
+    assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11), assets(Asset12, Result12).
+dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
+    Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10, Asset11, Result11, Asset12, Result12, Asset13,
+    Result13]) -->
+    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
+    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
+    assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11), assets(Asset12, Result12),
+    assets(Asset13, Result13).
+dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
+    Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10, Asset11, Result11, Asset12, Result12, Asset13,
+    Result13, Asset14, Result14]) -->
+    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
+    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
+    assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11), assets(Asset12, Result12),
+    assets(Asset13, Result13), assets(Asset14, Result14).
+dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
+    Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10, Asset11, Result11, Asset12, Result12, Asset13,
+    Result13, Asset14, Result14, Asset15, Result15]) -->
+    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
+    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
+    assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11), assets(Asset12, Result12),
+    assets(Asset13, Result13), assets(Asset14, Result14), assets(Asset15, Result15).
+dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
+    Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10, Asset11, Result11, Asset12, Result12, Asset13,
+    Result13, Asset14, Result14, Asset15, Result15, Asset16, Result16]) -->
+    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
+    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
+    assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11), assets(Asset12, Result12),
+    assets(Asset13, Result13), assets(Asset14, Result14), assets(Asset15, Result15), assets(Asset16, Result16).
+run_dcg(File, Atoms, X):-
+    input(File, Atoms),
+    phrase(dcg_parser(X), Atoms).
