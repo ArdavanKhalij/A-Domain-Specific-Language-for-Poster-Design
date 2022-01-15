@@ -106,4 +106,30 @@ figure_command([Property1, Property2, Property3, Property4, Property5, Property6
                [figure, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
                properties(Property4), properties(Property5), properties(Property6), properties(Property7),
                properties(Property8), properties(Property9).
+% image with at least one and maximum 9 properties
+image_command([Property1]) --> [image, :, '\n'], properties(Property1).
+image_command([Property1, Property2]) -->
+               [image, :, '\n'], properties(Property1), properties(Property2).
+image_command([Property1, Property2, Property3]) -->
+               [image, :, '\n'], properties(Property1), properties(Property2), properties(Property3).
+image_command([Property1, Property2, Property3, Property4]) -->
+               [image, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4).
+image_command([Property1, Property2, Property3, Property4, Property5]) -->
+               [image, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5).
+image_command([Property1, Property2, Property3, Property4, Property5, Property6]) -->
+               [image, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5), properties(Property6).
+image_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7]) -->
+               [image, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5), properties(Property6), properties(Property7).
+image_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7, Property8]) -->
+               [image, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5), properties(Property6), properties(Property7),
+               properties(Property8).
+image_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7, Property8, Property9]) -->
+               [image, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5), properties(Property6), properties(Property7),
+               properties(Property8), properties(Property9).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
