@@ -11,9 +11,9 @@ to_integer(WidthxHeight, Width, Height):-
     re_split(x, WidthxHeight, [W, _, H]),
     atom_number(H, Height),
     atom_number(W, Width).
-% each property of the types
+% Each property of the types
 % dimensions property
-dimensions_command(Width, Height) --> ['\t', dimensions, :, WidthxHeight, '\n'], {to_integer(WidthxHeight, Width, Height)}.
+dimensions_command(Row, Cols) --> ['\t', dimensions, :, WidthxHeight, '\n'], {to_integer(WidthxHeight, Row, Cols)}.
 % filename property
 filename_command(FileName) --> ['\t', filename, :, '"',  FileName, '"', '\n'].
 % content property
@@ -31,4 +31,6 @@ available_position(top-right).
 available_position(bottom-left).
 available_position(bottom-right).
 position_command(Position) --> ['\t', position, :, Position, '\n'], {available_position(Position)}.
+% aspect property
+aspect_command(Width, Height) --> ['\t', aspect, :, WidthxHeight, '\n'], {to_integer(WidthxHeight, Width, Height)}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
