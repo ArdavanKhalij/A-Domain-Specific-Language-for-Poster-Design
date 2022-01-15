@@ -132,4 +132,30 @@ image_command([Property1, Property2, Property3, Property4, Property5, Property6,
                [image, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
                properties(Property4), properties(Property5), properties(Property6), properties(Property7),
                properties(Property8), properties(Property9).
+% text with at least one and maximum 9 properties
+text_command([Property1]) --> [text, :, '\n'], properties(Property1).
+text_command([Property1, Property2]) -->
+               [text, :, '\n'], properties(Property1), properties(Property2).
+text_command([Property1, Property2, Property3]) -->
+               [text, :, '\n'], properties(Property1), properties(Property2), properties(Property3).
+text_command([Property1, Property2, Property3, Property4]) -->
+               [text, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4).
+text_command([Property1, Property2, Property3, Property4, Property5]) -->
+               [text, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5).
+text_command([Property1, Property2, Property3, Property4, Property5, Property6]) -->
+               [text, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5), properties(Property6).
+text_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7]) -->
+               [text, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5), properties(Property6), properties(Property7).
+text_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7, Property8]) -->
+               [text, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5), properties(Property6), properties(Property7),
+               properties(Property8).
+text_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7, Property8, Property9]) -->
+               [text, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5), properties(Property6), properties(Property7),
+               properties(Property8), properties(Property9).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
