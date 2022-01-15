@@ -213,4 +213,30 @@ title_command([Property1, Property2, Property3, Property4, Property5, Property6,
                [title, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
                properties(Property4), properties(Property5), properties(Property6), properties(Property7),
                properties(Property8), properties(Property9).
+% section with at least one and maximum 9 properties
+section_command([Property1]) --> [section, :, '\n'], properties(Property1).
+section_command([Property1, Property2]) -->
+               [section, :, '\n'], properties(Property1), properties(Property2).
+section_command([Property1, Property2, Property3]) -->
+               [section, :, '\n'], properties(Property1), properties(Property2), properties(Property3).
+section_command([Property1, Property2, Property3, Property4]) -->
+               [section, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4).
+section_command([Property1, Property2, Property3, Property4, Property5]) -->
+               [section, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5).
+section_command([Property1, Property2, Property3, Property4, Property5, Property6]) -->
+               [section, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5), properties(Property6).
+section_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7]) -->
+               [section, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5), properties(Property6), properties(Property7).
+section_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7, Property8]) -->
+               [section, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5), properties(Property6), properties(Property7),
+               properties(Property8).
+section_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7, Property8, Property9]) -->
+               [section, :, '\n'], properties(Property1), properties(Property2), properties(Property3),
+               properties(Property4), properties(Property5), properties(Property6), properties(Property7),
+               properties(Property8), properties(Property9).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
