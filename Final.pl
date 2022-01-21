@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Adding the libraries.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-:- use_module([library(lists), io, library(pcre)]).
+:- use_module([library(lists), io, library(pcre), library(clpfd)]).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DCG Parser
@@ -82,311 +82,54 @@ properties([adjacency_command, Adjacency, Ref]) --> adjacency_command(Adjacency,
 % asset types
 % poster top-level asset: This asset is a top-level asset and it only needs two properties and they are mandatory,
 % dimensions and filename. So it can have only these two properties and it should have these two properties.
-poster_command([Property1, Property2]) -->
-               [poster, :], properties_poster(Property1), properties_poster(Property2).
+poster_command([Property1, Property2]) --> [poster, :], properties_poster(Property1), properties_poster(Property2).
+% DCG command for properties to prevent the duplication in code for using in assets. We dont need this for poster
+% because we only have one possible way to have poster asset and its with to properties that are special for poster.
+properties_for_using_in_assets([Property1]) --> properties(Property1).
+properties_for_using_in_assets([Property1|Tail]) --> properties(Property1), properties_for_using_in_assets(Tail).
 % figure with at least one and maximum 9 properties
 figure_command([Property1]) --> ['\n', figure, :], properties(Property1).
-figure_command([Property1, Property2]) -->
-               ['\n', figure, :], properties(Property1), properties(Property2).
-figure_command([Property1, Property2, Property3]) -->
-               ['\n', figure, :], properties(Property1), properties(Property2), properties(Property3).
-figure_command([Property1, Property2, Property3, Property4]) -->
-               ['\n', figure, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4).
-figure_command([Property1, Property2, Property3, Property4, Property5]) -->
-               ['\n', figure, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5).
-figure_command([Property1, Property2, Property3, Property4, Property5, Property6]) -->
-               ['\n', figure, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5), properties(Property6).
-figure_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7]) -->
-               ['\n', figure, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5), properties(Property6), properties(Property7).
-figure_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7, Property8]) -->
-               ['\n', figure, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5), properties(Property6), properties(Property7),
-               properties(Property8).
-figure_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7, Property8, Property9]) -->
-               ['\n', figure, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5), properties(Property6), properties(Property7),
-               properties(Property8), properties(Property9).
+figure_command(Properties) --> ['\n', figure, :], properties_for_using_in_assets(Properties).
 % image with at least one and maximum 9 properties
 image_command([Property1]) --> ['\n', image, :], properties(Property1).
-image_command([Property1, Property2]) -->
-               ['\n', image, :], properties(Property1), properties(Property2).
-image_command([Property1, Property2, Property3]) -->
-               ['\n', image, :], properties(Property1), properties(Property2), properties(Property3).
-image_command([Property1, Property2, Property3, Property4]) -->
-               ['\n', image, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4).
-image_command([Property1, Property2, Property3, Property4, Property5]) -->
-               ['\n', image, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5).
-image_command([Property1, Property2, Property3, Property4, Property5, Property6]) -->
-               ['\n', image, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5), properties(Property6).
-image_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7]) -->
-               ['\n', image, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5), properties(Property6), properties(Property7).
-image_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7, Property8]) -->
-               ['\n', image, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5), properties(Property6), properties(Property7),
-               properties(Property8).
-image_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7, Property8, Property9]) -->
-               ['\n', image, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5), properties(Property6), properties(Property7),
-               properties(Property8), properties(Property9).
+image_command(Properties) --> ['\n', image, :], properties_for_using_in_assets(Properties).
 % text with at least one and maximum 9 properties
 text_command([Property1]) --> ['\n', text, :], properties(Property1).
-text_command([Property1, Property2]) -->
-               ['\n', text, :], properties(Property1), properties(Property2).
-text_command([Property1, Property2, Property3]) -->
-               ['\n', text, :], properties(Property1), properties(Property2), properties(Property3).
-text_command([Property1, Property2, Property3, Property4]) -->
-               ['\n', text, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4).
-text_command([Property1, Property2, Property3, Property4, Property5]) -->
-               ['\n', text, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5).
-text_command([Property1, Property2, Property3, Property4, Property5, Property6]) -->
-               ['\n', text, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5), properties(Property6).
-text_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7]) -->
-               ['\n', text, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5), properties(Property6), properties(Property7).
-text_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7, Property8]) -->
-               ['\n', text, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5), properties(Property6), properties(Property7),
-               properties(Property8).
-text_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7, Property8, Property9]) -->
-               ['\n', text, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5), properties(Property6), properties(Property7),
-               properties(Property8), properties(Property9).
+text_command(Properties) --> ['\n', text, :], properties_for_using_in_assets(Properties).
 % caption with at least one and maximum 9 properties
 caption_command([Property1]) --> ['\n', caption, :], properties(Property1).
-caption_command([Property1, Property2]) -->
-               ['\n', caption, :], properties(Property1), properties(Property2).
-caption_command([Property1, Property2, Property3]) -->
-               ['\n', caption, :], properties(Property1), properties(Property2), properties(Property3).
-caption_command([Property1, Property2, Property3, Property4]) -->
-               ['\n', caption, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4).
-caption_command([Property1, Property2, Property3, Property4, Property5]) -->
-               ['\n', caption, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5).
-caption_command([Property1, Property2, Property3, Property4, Property5, Property6]) -->
-               ['\n', caption, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5), properties(Property6).
-caption_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7]) -->
-               ['\n', caption, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5), properties(Property6), properties(Property7).
-caption_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7, Property8]) -->
-               ['\n', caption, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5), properties(Property6), properties(Property7),
-               properties(Property8).
-caption_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7, Property8, Property9]) -->
-               ['\n', caption, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5), properties(Property6), properties(Property7),
-               properties(Property8), properties(Property9).
+caption_command(Properties) --> ['\n', caption, :], properties_for_using_in_assets(Properties).
 % title with at least one and maximum 9 properties
 title_command([Property1]) --> ['\n', title, :], properties(Property1).
-title_command([Property1, Property2]) -->
-               ['\n', title, :], properties(Property1), properties(Property2).
-title_command([Property1, Property2, Property3]) -->
-               ['\n', title, :], properties(Property1), properties(Property2), properties(Property3).
-title_command([Property1, Property2, Property3, Property4]) -->
-               ['\n', title, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4).
-title_command([Property1, Property2, Property3, Property4, Property5]) -->
-               ['\n', title, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5).
-title_command([Property1, Property2, Property3, Property4, Property5, Property6]) -->
-               ['\n', title, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5), properties(Property6).
-title_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7]) -->
-               ['\n', title, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5), properties(Property6), properties(Property7).
-title_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7, Property8]) -->
-               ['\n', title, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5), properties(Property6), properties(Property7),
-               properties(Property8).
-title_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7, Property8, Property9]) -->
-               ['\n', title, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5), properties(Property6), properties(Property7),
-               properties(Property8), properties(Property9).
+title_command(Properties) --> ['\n', title, :], properties_for_using_in_assets(Properties).
 % section with at least one and maximum 9 properties
 section_command([Property1]) --> ['\n', section, :], properties(Property1).
-section_command([Property1, Property2]) -->
-               ['\n', section, :], properties(Property1), properties(Property2).
-section_command([Property1, Property2, Property3]) -->
-               ['\n', section, :], properties(Property1), properties(Property2), properties(Property3).
-section_command([Property1, Property2, Property3, Property4]) -->
-               ['\n', section, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4).
-section_command([Property1, Property2, Property3, Property4, Property5]) -->
-               ['\n', section, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5).
-section_command([Property1, Property2, Property3, Property4, Property5, Property6]) -->
-               ['\n', section, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5), properties(Property6).
-section_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7]) -->
-               ['\n', section, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5), properties(Property6), properties(Property7).
-section_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7, Property8]) -->
-               ['\n', section, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5), properties(Property6), properties(Property7),
-               properties(Property8).
-section_command([Property1, Property2, Property3, Property4, Property5, Property6, Property7, Property8, Property9]) -->
-               ['\n', section, :], properties(Property1), properties(Property2), properties(Property3),
-               properties(Property4), properties(Property5), properties(Property6), properties(Property7),
-               properties(Property8), properties(Property9).
+section_command(Properties) --> ['\n', section, :], properties_for_using_in_assets(Properties).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % combine the assets: poster should be always at first
-asset1(poster_command, Result) --> poster_command(Result).
-assets(figure_command, Result) --> figure_command(Result).
-assets(image_command, Result) --> image_command(Result).
-assets(text_command, Result) --> text_command(Result).
-assets(caption_command, Result) --> caption_command(Result).
-assets(title_command, Result) --> title_command(Result).
-assets(section_command, Result) --> section_command(Result).
+assets([poster_command, Result]) --> poster_command(Result).
+assets([figure_command, Result]) --> figure_command(Result).
+assets([image_command, Result]) --> image_command(Result).
+assets([text_command, Result]) --> text_command(Result).
+assets([caption_command, Result]) --> caption_command(Result).
+assets([title_command, Result]) --> title_command(Result).
+assets([section_command, Result]) --> section_command(Result).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % The compelete parser
-dcg_parser([Asset1, Result1]) --> asset1(Asset1, Result1).
-dcg_parser([Asset1, Result1, Asset2, Result2]) -->
-    asset1(Asset1, Result1), assets(Asset2, Result2).
-dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3]) -->
-    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3).
-dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4]) -->
-    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4).
-dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5]) -->
-    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
-    assets(Asset5, Result5).
-dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6]) -->
-    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
-    assets(Asset5, Result5), assets(Asset6, Result6).
-dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
-    Result7]) -->
-    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
-    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7).
-dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
-    Result7, Asset8, Result8]) -->
-    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
-    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8).
-dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
-    Result7, Asset8, Result8, Asset9, Result9]) -->
-    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
-    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
-    assets(Asset9, Result9).
-dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
-    Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10]) -->
-    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
-    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
-    assets(Asset9, Result9), assets(Asset10, Result10).
-dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
-    Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10, Asset11, Result11]) -->
-    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
-    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
-    assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11).
-dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
-    Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10, Asset11, Result11, Asset12, Result12]) -->
-    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
-    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
-    assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11), assets(Asset12, Result12).
-dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
-    Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10, Asset11, Result11, Asset12, Result12, Asset13,
-    Result13]) -->
-    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
-    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
-    assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11), assets(Asset12, Result12),
-    assets(Asset13, Result13).
-dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
-    Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10, Asset11, Result11, Asset12, Result12, Asset13,
-    Result13, Asset14, Result14]) -->
-    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
-    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
-    assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11), assets(Asset12, Result12),
-    assets(Asset13, Result13), assets(Asset14, Result14).
-dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
-    Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10, Asset11, Result11, Asset12, Result12, Asset13,
-    Result13, Asset14, Result14, Asset15, Result15]) -->
-    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
-    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
-    assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11), assets(Asset12, Result12),
-    assets(Asset13, Result13), assets(Asset14, Result14), assets(Asset15, Result15).
-dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
-    Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10, Asset11, Result11, Asset12, Result12, Asset13,
-    Result13, Asset14, Result14, Asset15, Result15, Asset16, Result16]) -->
-    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
-    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
-    assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11), assets(Asset12, Result12),
-    assets(Asset13, Result13), assets(Asset14, Result14), assets(Asset15, Result15), assets(Asset16, Result16).
-dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
-    Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10, Asset11, Result11, Asset12, Result12, Asset13,
-    Result13, Asset14, Result14, Asset15, Result15, Asset16, Result16, Asset17, Result17]) -->
-    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
-    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
-    assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11), assets(Asset12, Result12),
-    assets(Asset13, Result13), assets(Asset14, Result14), assets(Asset15, Result15), assets(Asset16, Result16),
-    assets(Asset17, Result17).
-dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
-    Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10, Asset11, Result11, Asset12, Result12, Asset13,
-    Result13, Asset14, Result14, Asset15, Result15, Asset16, Result16, Asset17, Result17, Asset18, Result18]) -->
-    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
-    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
-    assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11), assets(Asset12, Result12),
-    assets(Asset13, Result13), assets(Asset14, Result14), assets(Asset15, Result15), assets(Asset16, Result16),
-    assets(Asset17, Result17), assets(Asset18, Result18).
-dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
-    Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10, Asset11, Result11, Asset12, Result12, Asset13,
-    Result13, Asset14, Result14, Asset15, Result15, Asset16, Result16, Asset17, Result17, Asset18, Result18, Asset19,
-    Result19]) -->
-    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
-    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
-    assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11), assets(Asset12, Result12),
-    assets(Asset13, Result13), assets(Asset14, Result14), assets(Asset15, Result15), assets(Asset16, Result16),
-    assets(Asset17, Result17), assets(Asset18, Result18), assets(Asset19, Result19).
-dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
-    Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10, Asset11, Result11, Asset12, Result12, Asset13,
-    Result13, Asset14, Result14, Asset15, Result15, Asset16, Result16, Asset17, Result17, Asset18, Result18, Asset19,
-    Result19, Asset20, Result20]) -->
-    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
-    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
-    assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11), assets(Asset12, Result12),
-    assets(Asset13, Result13), assets(Asset14, Result14), assets(Asset15, Result15), assets(Asset16, Result16),
-    assets(Asset17, Result17), assets(Asset18, Result18), assets(Asset19, Result19), assets(Asset20, Result20).
-dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
-    Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10, Asset11, Result11, Asset12, Result12, Asset13,
-    Result13, Asset14, Result14, Asset15, Result15, Asset16, Result16, Asset17, Result17, Asset18, Result18, Asset19,
-    Result19, Asset20, Result20, Asset21, Result21]) -->
-    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
-    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
-    assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11), assets(Asset12, Result12),
-    assets(Asset13, Result13), assets(Asset14, Result14), assets(Asset15, Result15), assets(Asset16, Result16),
-    assets(Asset17, Result17), assets(Asset18, Result18), assets(Asset19, Result19), assets(Asset20, Result20),
-    assets(Asset21, Result21).
-dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
-    Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10, Asset11, Result11, Asset12, Result12, Asset13,
-    Result13, Asset14, Result14, Asset15, Result15, Asset16, Result16, Asset17, Result17, Asset18, Result18, Asset19,
-    Result19, Asset20, Result20, Asset21, Result21, Asset22, Result22]) -->
-    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
-    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
-    assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11), assets(Asset12, Result12),
-    assets(Asset13, Result13), assets(Asset14, Result14), assets(Asset15, Result15), assets(Asset16, Result16),
-    assets(Asset17, Result17), assets(Asset18, Result18), assets(Asset19, Result19), assets(Asset20, Result20),
-    assets(Asset21, Result21), assets(Asset22, Result22).
-dcg_parser([Asset1, Result1, Asset2, Result2, Asset3, Result3, Asset4, Result4, Asset5, Result5, Asset6, Result6, Asset7,
-    Result7, Asset8, Result8, Asset9, Result9, Asset10, Result10, Asset11, Result11, Asset12, Result12, Asset13,
-    Result13, Asset14, Result14, Asset15, Result15, Asset16, Result16, Asset17, Result17, Asset18, Result18, Asset19,
-    Result19, Asset20, Result20, Asset21, Result21, Asset22, Result22, Asset23, Result23]) -->
-    asset1(Asset1, Result1), assets(Asset2, Result2), assets(Asset3, Result3), assets(Asset4, Result4),
-    assets(Asset5, Result5), assets(Asset6, Result6), assets(Asset7, Result7), assets(Asset8, Result8),
-    assets(Asset9, Result9), assets(Asset10, Result10), assets(Asset11, Result11), assets(Asset12, Result12),
-    assets(Asset13, Result13), assets(Asset14, Result14), assets(Asset15, Result15), assets(Asset16, Result16),
-    assets(Asset17, Result17), assets(Asset18, Result18), assets(Asset19, Result19), assets(Asset20, Result20),
-    assets(Asset21, Result21), assets(Asset22, Result22), assets(Asset23, Result23).
+dcg_parser([Result1]) --> assets(Result1).
+dcg_parser([Result1|Tail]) -->
+    assets(Result1),
+    dcg_parser(Tail).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Info is the compelete parsed information
-run_dcg(File, Atoms, Info):-
-    input(File, Atoms),
-    phrase(dcg_parser(Info), Atoms).
+run_dcg(File, Boxes, Info):-
+    input(File, Boxes),
+    phrase(dcg_parser(Info), Boxes).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Constraints part
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Checking if the first asset is the poster and otherwise return false
+check_if_first_asset_is_poster([[AssetName|_]|_]):-
+    AssetName = poster_command.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
