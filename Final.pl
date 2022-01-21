@@ -76,7 +76,7 @@ properties([width_command_absolute, Width]) --> width_command_absolute(Width).
 properties([height_command_percent, Height]) --> height_command_percent(Height).
 properties([height_command_absolute, Height]) --> height_command_absolute(Height).
 properties([ref_command, Ref]) --> ref_command(Refs), {atomic_list_concat(Refs,' ',Ref)}.
-properties([adjacency_command, Adjacency, Ref]) --> adjacency_command(Adjacency, RefName), 
+properties([adjacency_command, Adjacency, Ref]) --> adjacency_command(Adjacency, RefName),
     {atomic_list_concat(RefName,' ',Ref)}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % asset types
@@ -117,17 +117,47 @@ assets([section_command, Result]) --> section_command(Result).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % The compelete parser
 dcg_parser([Result1]) --> assets(Result1).
-dcg_parser([Result1|Tail]) --> assets(Result1), dcg_parser(Tail).
+dcg_parser([Result1|Tail]) -->
+    assets(Result1),
+    dcg_parser(Tail).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Info is the compelete parsed information
-run_dcg(File, Boxes, Info):-
-    input(File, Boxes),
-    phrase(dcg_parser(Info), Boxes).
+run_dcg(File, Output, Info):-
+    input(File, Output),
+    phrase(dcg_parser(Info), Output).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Constraints part
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Generat the IDs.
+generate_ID(Assets, ID):-
+    length(Assets, X),
+    findall(N, between(1, X, N), ID).
+% Generat the boxes.
+boxes_generator([Head], ID, [Result]):-
+    append(ID, Head, Result).
+boxes_generator([Head|Tail], [IDH|IDT], [H|T]):-
+    append([IDH], Head, Result),
+    H = Result,
+    boxes_generator(Tail, IDT, T).
 % Checking if the first asset is the poster and otherwise return false
 check_if_first_asset_is_poster([[AssetName|_]|_]):-
     AssetName = poster_command.
+% Extract the Type from the Box. The type of the box can only be one of: text, image, header.
+box_type([_, Type|_], text):-
+    Type = text_command.
+box_type([_, Type|_], text):-
+    Type = caption_command.
+box_type([_, Type|_], image):-
+    Type = image_command.
+box_type([_, Type|_], image):-
+    Type = figure_command.
+box_type([_, Type|_], header):-
+    Type = title_command.
+box_type([_, Type|_], header):-
+    Type = section_command.
+% Extract the Id from the Box. Each box must have an associated unique Id, like a number, letter, or string.
+% ID of each box is its index in the list of the boxes
+box_id([ID, _|_], Id):-
+    ID #= Id.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
