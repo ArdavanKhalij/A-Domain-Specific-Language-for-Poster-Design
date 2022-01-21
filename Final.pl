@@ -76,7 +76,7 @@ properties([width_command_absolute, Width]) --> width_command_absolute(Width).
 properties([height_command_percent, Height]) --> height_command_percent(Height).
 properties([height_command_absolute, Height]) --> height_command_absolute(Height).
 properties([ref_command, Ref]) --> ref_command(Refs), {atomic_list_concat(Refs,' ',Ref)}.
-properties([adjacency_command, Adjacency, Ref]) --> adjacency_command(Adjacency, RefName),
+properties([adjacency_command, Adjacency, Ref]) --> adjacency_command(Adjacency, RefName), 
     {atomic_list_concat(RefName,' ',Ref)}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % asset types
@@ -117,9 +117,7 @@ assets([section_command, Result]) --> section_command(Result).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % The compelete parser
 dcg_parser([Result1]) --> assets(Result1).
-dcg_parser([Result1|Tail]) -->
-    assets(Result1),
-    dcg_parser(Tail).
+dcg_parser([Result1|Tail]) --> assets(Result1), dcg_parser(Tail).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Info is the compelete parsed information
 run_dcg(File, Boxes, Info):-
