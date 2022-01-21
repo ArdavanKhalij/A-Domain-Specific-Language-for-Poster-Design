@@ -140,6 +140,7 @@ boxes_generator([Head|Tail], [IDH|IDT], [H|T]):-
     append([IDH], Head, Result),
     H = Result,
     boxes_generator(Tail, IDT, T).
+delete_poster_from_boxes([_|Boxes], Boxes).
 % Checking if the first asset is the poster and otherwise return false
 check_if_first_asset_is_poster([[AssetName|_]|_]):-
     AssetName = poster_command.
