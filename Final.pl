@@ -12,14 +12,19 @@ to_integer(WidthxHeight, Width, Height):-
     re_split(x, WidthxHeight, [W, _, H]),
     atom_number(H, Height),
     atom_number(W, Width).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % dimensions property
 dimensions_command(Row, Cols) --> ['\n', '\t', dimensions, :, WidthxHeight], {to_integer(WidthxHeight, Row, Cols)}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % filename property
 filename_command(FileName) --> ['\n', '\t', filename, :, '"',  FileName, '"'].
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % content property
 content_command(Content) --> ['\n', '\t', content, :, '"'|Content], ['"'], {\+member('\n', Content)}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % image property
 source_command(Source) --> ['\n', '\t', source, :, '"', Source, '"'].
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % position property
 % All available positions
 available_position('top-edge').
@@ -30,11 +35,15 @@ available_position('top-left').
 available_position('top-right').
 available_position('bottom-left').
 available_position('bottom-right').
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 position_command(Position) --> ['\n', '\t', position, :, Position], {available_position(Position)}.
 % aspect property
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 aspect_command(Width, Height) --> ['\n', '\t', aspect, :, WidthxHeight], {to_integer(WidthxHeight, Width, Height)}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % size property
 size_command(Width, Height) --> ['\n', '\t', size, :, WidthxHeight], {to_integer(WidthxHeight, Width, Height)}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % width property
 % percent width
 % convert the number and percent sign to only a number
@@ -42,18 +51,24 @@ to_integer_percent(Output, Input):-
     atom_string(Input, InputString),
     split_string(InputString, "%", "", [InputStringWithoutPercent,_]),
     atom_number(InputStringWithoutPercent, Output).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 width_command_percent(Width) --> ['\n', '\t', width, :, WidthWithPercent],
                                  {to_integer_percent(Width, WidthWithPercent)}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % absolute width
 width_command_absolute(Width) --> ['\n', '\t', width, :, WidthAtom], {atom_number(WidthAtom, Width)}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % height property
 % percent height
 height_command_percent(Height) --> ['\n', '\t', height, :, HeightWithPercent],
                                    {to_integer_percent(Height, HeightWithPercent)}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % absolute height
 height_command_absolute(Height) --> ['\n', '\t', height, :, HeightAtom], {atom_number(HeightAtom, Height)}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ref property
 ref_command(Ref) --> ['\n', '\t', ref, :, '"'|Ref], ['"'], {\+member('\n', Ref)}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % adjacency property
 % All available adjacency
 available_adjacency(above).
@@ -62,9 +77,11 @@ available_adjacency(leftof).
 available_adjacency(rightof).
 adjacency_command(Adjacency, Ref) --> ['\n', '\t', adjacency, :, Adjacency, '"'|Ref], ['"'],
                                       {available_adjacency(Adjacency), \+member('\n', Ref)}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Command of all top-level properties that returns the property name and its output arguments
 properties_poster([dimensions_command, Row, Cols]) --> dimensions_command(Row, Cols).
 properties_poster([filename_command, FileName]) --> filename_command(FileName).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Command of all properties that returns the property name and its output arguments
 properties([content_command, Content]) --> content_command(Contents), {atomic_list_concat(Contents,' ',Content)}.
 properties([source_command, Source]) --> source_command(Source).
@@ -83,25 +100,32 @@ properties([adjacency_command, Adjacency, Ref]) --> adjacency_command(Adjacency,
 % poster top-level asset: This asset is a top-level asset and it only needs two properties and they are mandatory,
 % dimensions and filename. So it can have only these two properties and it should have these two properties.
 poster_command([Property1, Property2]) --> [poster, :], properties_poster(Property1), properties_poster(Property2).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DCG command for properties to prevent the duplication in code for using in assets. We dont need this for poster
 % because we only have one possible way to have poster asset and its with to properties that are special for poster.
 properties_for_using_in_assets([Property1]) --> properties(Property1).
 properties_for_using_in_assets([Property1|Tail]) --> properties(Property1), properties_for_using_in_assets(Tail).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % figure with at least one and maximum 9 properties
 figure_command([Property1]) --> ['\n', figure, :], properties(Property1).
 figure_command(Properties) --> ['\n', figure, :], properties_for_using_in_assets(Properties).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % image with at least one and maximum 9 properties
 image_command([Property1]) --> ['\n', image, :], properties(Property1).
 image_command(Properties) --> ['\n', image, :], properties_for_using_in_assets(Properties).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % text with at least one and maximum 9 properties
 text_command([Property1]) --> ['\n', text, :], properties(Property1).
 text_command(Properties) --> ['\n', text, :], properties_for_using_in_assets(Properties).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % caption with at least one and maximum 9 properties
 caption_command([Property1]) --> ['\n', caption, :], properties(Property1).
 caption_command(Properties) --> ['\n', caption, :], properties_for_using_in_assets(Properties).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % title with at least one and maximum 9 properties
 title_command([Property1]) --> ['\n', title, :], properties(Property1).
 title_command(Properties) --> ['\n', title, :], properties_for_using_in_assets(Properties).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % section with at least one and maximum 9 properties
 section_command([Property1]) --> ['\n', section, :], properties(Property1).
 section_command(Properties) --> ['\n', section, :], properties_for_using_in_assets(Properties).
@@ -133,6 +157,7 @@ run_dcg(File, Output, Info):-
 generate_ID(Assets, ID):-
     length(Assets, X),
     findall(N, between(1, X, N), ID).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Generat the boxes.
 boxes_generator([Head], ID, [Result]):-
     append(ID, Head, Result).
@@ -140,10 +165,13 @@ boxes_generator([Head|Tail], [IDH|IDT], [H|T]):-
     append([IDH], Head, Result),
     H = Result,
     boxes_generator(Tail, IDT, T).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 delete_poster_from_boxes([_|Boxes], Boxes).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Checking if the first asset is the poster and otherwise return false
 check_if_first_asset_is_poster([[AssetName|_]|_]):-
     AssetName = poster_command.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Extract the Type from the Box. The type of the box can only be one of: text, image, header.
 box_type([_, Type|_], text):-
     Type = text_command.
@@ -157,16 +185,19 @@ box_type([_, Type|_], header):-
     Type = title_command.
 box_type([_, Type|_], header):-
     Type = section_command.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Extract the Id from the Box. Each box must have an associated unique Id, like a number, letter, or string.
 % ID of each box is its index in the list of the boxes
 box_id([ID, _|_], Id):-
     ID #= Id.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Extract the start (C0) and end (C1) indices from the Box. The start index is inclusive and the end index is exclusive,
 % i.e. [R0, R1).
 %get_the_properties([[_, _, List]|Tail], Result):-
 % get row and column values
 %getrowcol([[_, [[_, Row, Col], [_]]]|_], Row, Col).
 %getrowcol([[_, [[_], [_, Row, Col]]]|_], Row, Col).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Limited the R0, R1, C0 and C1 base on position.
 available_position_int('top-edge', 1).
 available_position_int('bottom-edge', 2).
@@ -232,21 +263,14 @@ position_constraint(Row, Col, 'bottom-right', R0, R1, C0, C1):-
     C1 in 1..Col,
     available_position_int('bottom-right', Num),
     R0 #= Row #/\ R1 #< Row, C0 #= Col, C1 #< Col #<== Num #= 8.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Limited the R0, R1, C0 and C1 base on width in percent.
 width_percent_constraint(Col, PercentOfWidth, CC0, C0, C1):-
     C0 #= CC0,
     C1 #= CC0 + Col * PercentOfWidth div 100 #<== CC0 + Col * PercentOfWidth div 100 #=< Col.
-
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
 % UNTIL HERE!
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
 % Limited the R0, R1, C0 and C1 base on height in percent.
 height_percent_constraint(Row, Col, PercentOfHeight, RR0, _, CC0, CC1, R0, R1, C0, C1):-
     R0 #= RR0,
