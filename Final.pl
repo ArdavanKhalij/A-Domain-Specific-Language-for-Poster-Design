@@ -304,3 +304,36 @@ width_constraint(Col, Width, CC0, CC1, C0, C1):-
     C0 #= CC1,
     C1 #= CC1 + Width #<== CC1 + Width #=< Col.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Limited the R0, R1, C0 and C1 base on size.
+size_constraint(Row, Col, Width, Height, RR0, RR1, CC0, CC1, R0, R1, C0, C1):-
+    width_constraint(Col, Width, CC0, CC1, C0, C1),
+    height_constraint(Row, Height, RR0, RR1, R0, R1).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Limited the R0, R1, C0 and C1 base on aspect. we have one of the height or width.
+aspect_constraint_width(Size, Row, Col, Width, Height, RR0, CC0, R0, R1, C0, C1):-
+    R0 #= RR0,
+    C0 #= CC0,
+    C1 #= Size + C0 #<== Size + C0 #=< Col,
+    R1 #= Size div Width * Height + RR0 #<== Size div Width * Height + RR0 #=< Row.
+aspect_constraint_height(Size, Row, Col, Width, Height, RR0, CC0, R0, R1, C0, C1):-
+    R0 #= RR0,
+    C0 #= CC0,
+    R1 #= Size + R0 #<== Size + R0 #=< Row,
+    C1 #= Size * Width div Height + CC0 #<== Size * Width div Height + CC0 #=< Col.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Limited the R0, R1, C0 and C1 base on adjacency.
+%adjacency_constraint(Row, Col, Adjacency, Ref_box, Rf0, Rf1, Cf0, Cf1, R0, R1, C0, C1).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%find_position([_, _, List], yes):-
+%    append(List, NewList),
+%    member(position_command, NewList).
+%find_position([_], no).
+%
+%find_position([_, _, List], yes):-
+%    append(List, NewList),
+%    member(width_command_percent, NewList).
+%find_position([_], no).
+%
+%box_col([_, _, List], C0, C1):-
+%    append(List, C0),
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
