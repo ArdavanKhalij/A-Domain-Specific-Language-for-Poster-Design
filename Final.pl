@@ -165,52 +165,112 @@ box_id([ID, _|_], Id):-
 % i.e. [R0, R1).
 %get_the_properties([[_, _, List]|Tail], Result):-
 % get row and column values
-getrowcol([[_, [[_, Row, Col], [_]]]|_], Row, Col).
-getrowcol([[_, [[_], [_, Row, Col]]]|_], Row, Col).
+%getrowcol([[_, [[_, Row, Col], [_]]]|_], Row, Col).
+%getrowcol([[_, [[_], [_, Row, Col]]]|_], Row, Col).
 % Limited the R0, R1, C0 and C1 base on position.
-position_constraint(Row, Col, Position, R0, R1, C0, C1):-
+available_position_int('top-edge', 1).
+available_position_int('bottom-edge', 2).
+available_position_int('left-edge', 3).
+available_position_int('right-edge', 4).
+available_position_int('top-left', 5).
+available_position_int('top-right', 6).
+available_position_int('bottom-left', 7).
+available_position_int('bottom-right', 8).
+position_constraint(Row, Col, 'top-edge', R0, R1, C0, C1):-
     R0 in 1..Row,
     R1 in 1..Row,
     C0 in 1..Col,
     C1 in 1..Col,
-    R0 #= 1, R1 #> 1 #<== Position = 'top-edge',
-    R0 #= Row, R1 #< Row #<== Position = 'bottom-edge',
-    C0 #= 1, C1 #> 1 #<== Position = 'left-edge',
-    C0 #= Col, C1 #< Col #<== Position = 'right-edge',
-    R0 #= 1, R1 #> 1, C0 #= 1, C1 #> 1 #<== Position = 'top-left',
-    R0 #= 1, R1 #> 1, C0 #= Col, C1 #< Col #<== Position = 'top-right',
-    R0 #= Row, R1 #< Row, C0 #= 1, C1 #> 1 #<== Position = 'bottom-left',
-    R0 #= Row, R1 #< Row, C0 #= Col, C1 #< Col #<== Position = 'bottom-right'.
+    available_position_int('top-edge', Num),
+    R0 #= 1 #/\ R1 #> 1 #<== Num #= 1.
+position_constraint(Row, Col, 'bottom-edge', R0, R1, C0, C1):-
+    R0 in 1..Row,
+    R1 in 1..Row,
+    C0 in 1..Col,
+    C1 in 1..Col,
+    available_position_int('bottom-edge', Num),
+    R0 #= Row #/\ R1 #< Row #<== Num #= 2.
+position_constraint(Row, Col, 'left-edge', R0, R1, C0, C1):-
+    R0 in 1..Row,
+    R1 in 1..Row,
+    C0 in 1..Col,
+    C1 in 1..Col,
+    available_position_int('left-edge', Num),
+    C0 #= 1 #/\ C1 #> 1 #<== Num #= 3.
+position_constraint(Row, Col, 'right-edge', R0, R1, C0, C1):-
+    R0 in 1..Row,
+    R1 in 1..Row,
+    C0 in 1..Col,
+    C1 in 1..Col,
+    available_position_int('right-edge', Num),
+    C0 #= Col #/\ C1 #< Col #<== Num #= 4.
+position_constraint(Row, Col, 'top-left', R0, R1, C0, C1):-
+    R0 in 1..Row,
+    R1 in 1..Row,
+    C0 in 1..Col,
+    C1 in 1..Col,
+    available_position_int('top-left', Num),
+    R0 #= 1 #/\ R1 #> 1, C0 #= 1, C1 #> 1 #<== Num #= 5.
+position_constraint(Row, Col, 'top-right', R0, R1, C0, C1):-
+    R0 in 1..Row,
+    R1 in 1..Row,
+    C0 in 1..Col,
+    C1 in 1..Col,
+    available_position_int('top-right', Num),
+    R0 #= 1 #/\ R1 #> 1, C0 #= Col, C1 #< Col #<== Num #= 6.
+position_constraint(Row, Col, 'bottom-left', R0, R1, C0, C1):-
+    R0 in 1..Row,
+    R1 in 1..Row,
+    C0 in 1..Col,
+    C1 in 1..Col,
+    available_position_int('bottom-left', Num),
+    R0 #= Row #/\ R1 #< Row, C0 #= 1, C1 #> 1 #<== Num #= 7.
+position_constraint(Row, Col, 'bottom-right', R0, R1, C0, C1):-
+    R0 in 1..Row,
+    R1 in 1..Row,
+    C0 in 1..Col,
+    C1 in 1..Col,
+    available_position_int('bottom-right', Num),
+    R0 #= Row #/\ R1 #< Row, C0 #= Col, C1 #< Col #<== Num #= 8.
 % Limited the R0, R1, C0 and C1 base on width in percent.
-width_percent_constraint(Row, Col, PercentOfWidth, RR0, RR1, CC0, CC1, R0, R1, C0, C1):-
-    R0 #= RR0,
-    R1 #= RR1,
+width_percent_constraint(Col, PercentOfWidth, CC0, C0, C1):-
     C0 #= CC0,
-    C1 #= CC0 + Col * PercentOfWidth #<== CC0 + Col * PercentOfWidth #<= Col,.
+    C1 #= CC0 + Col * PercentOfWidth div 100 #<== CC0 + Col * PercentOfWidth div 100 #=< Col.
+
+
+
+% UNTIL HERE!
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
 % Limited the R0, R1, C0 and C1 base on height in percent.
-height_percent_constraint(Row, Col, PercentOfHeight, RR0, RR1, CC0, CC1, R0, R1, C0, C1):-
+height_percent_constraint(Row, Col, PercentOfHeight, RR0, _, CC0, CC1, R0, R1, C0, C1):-
     R0 #= RR0,
-    R1 #= RR0 + Col * PercentOfHeight #<== RR0 + Col * PercentOfHeight #<= Row,
+    R1 #= RR0 + Col * PercentOfHeight #<== RR0 + Col * PercentOfHeight #=< Row,
     C0 #= CC0,
     C1 #= CC1.
 % Limited the R0, R1, C0 and C1 base on height.
-height_constraint(Row, Col, Height, RR0, RR1, CC0, CC1, R0, R1, C0, C1):-
+height_constraint(Row, _, Height, RR0, _, CC0, CC1, R0, R1, C0, C1):-
     R0 #= RR0,
-    R1 #= RR0 + Height #<== RR0 + Height #<= Row,
+    R1 #= RR0 + Height #<== RR0 + Height #=< Row,
     C0 #= CC0,
     C1 #= CC1.
 % Limited the R0, R1, C0 and C1 base on width.
-width_constraint(Row, Col, Width, RR0, RR1, CC0, CC1, R0, R1, C0, C1):-
+width_constraint(_, Col, Width, RR0, RR1, CC0, _, R0, R1, C0, C1):-
     R0 #= RR0,
     R1 #= RR1,
     C0 #= CC0,
-    C1 #= CC0 + Width #<== CC0 + Width #<= Col.
+    C1 #= CC0 + Width #<== CC0 + Width #=< Col.
 % Limited the R0, R1, C0 and C1 base on size.
-size_constraint(Row, Col, Width, Height, RR0, RR1, CC0, CC1, R0, R1, C0, C1):-
+size_constraint(Row, Col, Width, Height, RR0, _, CC0, _, R0, R1, C0, C1):-
     R0 #= RR0,
-    R1 #= RR0 + Height #<== RR0 + Height #<= Row,
+    R1 #= RR0 + Height #<== RR0 + Height #=< Row,
     C0 #= CC0,
-    C1 #= CC0 + Width #<== CC0 + Width #<= Col.
+    C1 #= CC0 + Width #<== CC0 + Width #=< Col.
 % Limited the R0, R1, C0 and C1 base on aspect.
 aspect_constraint(Row, Col, Width, Height, R0, R1, C0, C1):-
     R0 in 1..Row,
@@ -219,5 +279,18 @@ aspect_constraint(Row, Col, Width, Height, R0, R1, C0, C1):-
     C1 in 1..Col,
     Aspect = Width/Height #==> Aspect = C1 - C0 div R1 - R0.
 % Limited the R0, R1, C0 and C1 base on adjacency.
-adjacency_constraint(Row, Col, Adjacency, Ref_box, Rf0, Rf1, Cf0, Cf1, R0, R1, C0, C1).
+%adjacency_constraint(Row, Col, Adjacency, Ref_box, Rf0, Rf1, Cf0, Cf1, R0, R1, C0, C1).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%find_position([_, _, List], yes):-
+%    append(List, NewList),
+%    member(position_command, NewList).
+%find_position([_], no).
+%
+%find_position([_, _, List], yes):-
+%    append(List, NewList),
+%    member(width_command_percent, NewList).
+%find_position([_], no).
+%
+%box_col([_, _, List], C0, C1):-
+%    append(List, C0),
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
