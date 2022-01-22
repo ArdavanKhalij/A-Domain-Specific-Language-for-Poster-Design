@@ -161,4 +161,63 @@ box_type([_, Type|_], header):-
 % ID of each box is its index in the list of the boxes
 box_id([ID, _|_], Id):-
     ID #= Id.
+% Extract the start (C0) and end (C1) indices from the Box. The start index is inclusive and the end index is exclusive,
+% i.e. [R0, R1).
+%get_the_properties([[_, _, List]|Tail], Result):-
+% get row and column values
+getrowcol([[_, [[_, Row, Col], [_]]]|_], Row, Col).
+getrowcol([[_, [[_], [_, Row, Col]]]|_], Row, Col).
+% Limited the R0, R1, C0 and C1 base on position.
+position_constraint(Row, Col, Position, R0, R1, C0, C1):-
+    R0 in 1..Row,
+    R1 in 1..Row,
+    C0 in 1..Col,
+    C1 in 1..Col,
+    R0 #= 1, R1 #> 1 #<== Position = 'top-edge',
+    R0 #= Row, R1 #< Row #<== Position = 'bottom-edge',
+    C0 #= 1, C1 #> 1 #<== Position = 'left-edge',
+    C0 #= Col, C1 #< Col #<== Position = 'right-edge',
+    R0 #= 1, R1 #> 1, C0 #= 1, C1 #> 1 #<== Position = 'top-left',
+    R0 #= 1, R1 #> 1, C0 #= Col, C1 #< Col #<== Position = 'top-right',
+    R0 #= Row, R1 #< Row, C0 #= 1, C1 #> 1 #<== Position = 'bottom-left',
+    R0 #= Row, R1 #< Row, C0 #= Col, C1 #< Col #<== Position = 'bottom-right'.
+% Limited the R0, R1, C0 and C1 base on width in percent.
+width_percent_constraint(Row, Col, PercentOfWidth, RR0, RR1, CC0, CC1, R0, R1, C0, C1):-
+    R0 #= RR0,
+    R1 #= RR1,
+    C0 #= CC0,
+    C1 #= CC0 + Col * PercentOfWidth #<== CC0 + Col * PercentOfWidth #<= Col,.
+% Limited the R0, R1, C0 and C1 base on height in percent.
+height_percent_constraint(Row, Col, PercentOfHeight, RR0, RR1, CC0, CC1, R0, R1, C0, C1):-
+    R0 #= RR0,
+    R1 #= RR0 + Col * PercentOfHeight #<== RR0 + Col * PercentOfHeight #<= Row,
+    C0 #= CC0,
+    C1 #= CC1.
+% Limited the R0, R1, C0 and C1 base on height.
+height_constraint(Row, Col, Height, RR0, RR1, CC0, CC1, R0, R1, C0, C1):-
+    R0 #= RR0,
+    R1 #= RR0 + Height #<== RR0 + Height #<= Row,
+    C0 #= CC0,
+    C1 #= CC1.
+% Limited the R0, R1, C0 and C1 base on width.
+width_constraint(Row, Col, Width, RR0, RR1, CC0, CC1, R0, R1, C0, C1):-
+    R0 #= RR0,
+    R1 #= RR1,
+    C0 #= CC0,
+    C1 #= CC0 + Width #<== CC0 + Width #<= Col.
+% Limited the R0, R1, C0 and C1 base on size.
+size_constraint(Row, Col, Width, Height, RR0, RR1, CC0, CC1, R0, R1, C0, C1):-
+    R0 #= RR0,
+    R1 #= RR0 + Height #<== RR0 + Height #<= Row,
+    C0 #= CC0,
+    C1 #= CC0 + Width #<== CC0 + Width #<= Col.
+% Limited the R0, R1, C0 and C1 base on aspect.
+aspect_constraint(Row, Col, Width, Height, R0, R1, C0, C1):-
+    R0 in 1..Row,
+    R1 in 1..Row,
+    C0 in 1..Col,
+    C1 in 1..Col,
+    Aspect = Width/Height #==> Aspect = C1 - C0 div R1 - R0.
+% Limited the R0, R1, C0 and C1 base on adjacency.
+adjacency_constraint(Row, Col, Adjacency, Ref_box, Rf0, Rf1, Cf0, Cf1, R0, R1, C0, C1).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
