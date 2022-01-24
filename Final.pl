@@ -157,13 +157,23 @@ generate_ID(Assets, ID):-
     length(Assets, X),
     findall(N, between(1, X, N), ID).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Generat the boxes.
+% Generat the boxes (giving them id).
 boxes_generator([Head], ID, [Result]):-
     append(ID, Head, Result).
 boxes_generator([Head|Tail], [IDH|IDT], [H|T]):-
     append([IDH], Head, Result),
     H = Result,
     boxes_generator(Tail, IDT, T).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Generat the boxes (giving them demensions of the poster).
+boxes_generator2([Head], Row, Col, [Result]):-
+    append(Head, [Row], Result1),
+    append(Result1, [Col], Result).
+boxes_generator2([Head|Tail], Row, Col, [H|T]):-
+    append(Head, [Row], Result1),
+    append(Result1, [Col], Result),
+    H = Result,
+    boxes_generator2(Tail, Row, Col, T).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 delete_poster_from_boxes([_|Boxes], Boxes).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -189,8 +199,71 @@ box_type([_, Type|_], header):-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Extract the Id from the Box. Each box must have an associated unique Id, like a number, letter, or string.
 % ID of each box is its index in the list of the boxes
-box_id([ID, _|_], Id):-
-    ID #= Id.
+box_id([ID|_], ID).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Extract the start (R0) and end (R1) indices from the Box. The start index is inclusive and the end index is
+% exclusive, i.e. [R0, R1).
+box_row([_, _, Properties, Row, Col], R0, R1):-
+    gettingsizes(Row, Col, Properties, 1, 1, 1, 1, Sizes),
+    last(Sizes, sizeofbox(R0, R1, _, _)).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Extract the start (C0) and end (C1) indices from the Box. The start index is inclusive and the end index is
+% exclusive, i.e. [R0, R1)..
+box_col([_, _, Properties, Row, Col], C0, C1):-
+    gettingsizes(Row, Col, Properties, 1, 1, 1, 1, Sizes),
+    last(Sizes, sizeofbox(_, _, C0, C1)).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Get the content.
+gettingcontent([], []).
+gettingcontent([[Name, Value]|Properties], [H|T]):-
+    Name = content_command,
+    H = Value,
+    gettingcontent(Properties, T).
+gettingcontent([[Name, Value]|Properties], [H|T]):-
+    Name = source_command,
+    H = Value,
+    gettingcontent(Properties, T).
+gettingcontent([[Name|_]|Properties], [H|T]):-
+    Name \= source_command,
+    Name \= content_command,
+    gettingcontent(Properties, [H|T]).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Extract the Content from the Box. If the box is a text or header type, this content should be string of the
+% associated textual content. If the box is an image type, this should be the path to the image file.
+box_content([_, _, Properties|_], Content):-
+    gettingcontent(Properties, Contents),
+    last(Contents, Content).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Boxes is a list of boxes corresponding tothe Layout.
+%layout_boxes([Layout_head|Layout_Tail], [Box|Boxes]):-
+%    box_id(Layout_head, Id),
+%    box_type(Layout_head, Type),
+%    box_col(Layout_head, C0, C1),
+%    box_row(Layout_head, R0, R1),
+%    box_content(Layout_head, Content),
+%    Box = box(Id, Type, C0, C1, R0, R1, Content),
+%    layout_boxes(Layout_Tail, Boxes).
+layout_boxes([], []).
+layout_boxes([Layout_head|Layout_Tail], [H|T]):-
+    box_id(Layout_head, Id),
+    box_type(Layout_head, Type),
+    box_col(Layout_head, C0, C1),
+    box_row(Layout_head, R0, R1),
+    box_content(Layout_head, Content),
+    H = box(Id, Type, C0, C1, R0, R1, Content),
+    layout_boxes(Layout_Tail, T).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Limited the R0, R1, C0 and C1 base on aspect. we have one of the height or width. we can use any of them.
+aspect_constraint_width(Size, Row, Col, Width, Height, RR0, CC0, R0, R1, C0, C1):-
+    R0 #= RR0,
+    C0 #= CC0,
+    C1 #= Size + C0 #<== Size + C0 #=< Col,
+    R1 #= Size div Width * Height + RR0 #<== Size div Width * Height + RR0 #=< Row.
+aspect_constraint_height(Size, Row, Col, Width, Height, RR0, CC0, R0, R1, C0, C1):-
+    R0 #= RR0,
+    C0 #= CC0,
+    R1 #= Size + R0 #<== Size + R0 #=< Row,
+    C1 #= Size * Width div Height + CC0 #<== Size * Width div Height + CC0 #=< Col.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Limited the R0, R1, C0 and C1 base on position.
 available_position_int('top-edge', 1).
@@ -243,10 +316,10 @@ position_constraint(Row, Col, 'bottom-right', R0, R1, C0, C1):-
     C0 #= Col - 10 * Col div 100.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Limited the R0, R1, C0 and C1 base on width in percent.
-width_percent_constraint(Col, PercentOfWidth, 1, CC1, C0, C1):-
+width_percent_constraint(Col, PercentOfWidth, 1, _, C0, C1):-
     C1 #=Col * PercentOfWidth div 100 #<== Col * PercentOfWidth div 100 #=< Col,
     C0 #= 1.
-width_percent_constraint(Col, PercentOfWidth, CC0, Col, C0, C1):-
+width_percent_constraint(Col, PercentOfWidth, _, Col, C0, C1):-
     C1 #= Col,
     C0 #= Col+1 - Col * PercentOfWidth div 100 #<== Col+1 - Col * PercentOfWidth div 100 #> 0.
 width_percent_constraint(Col, PercentOfWidth, CC0, CC1, C0, C1):-
@@ -267,21 +340,21 @@ width_percent_constraint(Col, PercentOfWidth, CC0, CC1, C0, C1):-
     C1 #=< Col.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Limited the R0, R1, C0 and C1 base on height in percent.
-height_percent_constraint(Row, PercentOfHeight, 1, RR1, R0, R1):-
+height_percent_constraint(Row, PercentOfHeight, 1, _, R0, R1):-
     R0 #= 1,
     R1 #= Row * PercentOfHeight div 100 #<== Row * PercentOfHeight div 100 #=< Row.
-height_percent_constraint(Row, PercentOfHeight, RR0, Row, R0, R1):-
+height_percent_constraint(Row, PercentOfHeight, _, Row, R0, R1):-
     R1 #= Row,
     R0 #= Row+1 - Row * PercentOfHeight div 100 #<== Row+1 - Row * PercentOfHeight div 100 #> 0.
-height_percent_constraint(Row, PercentOfHeight, RR0, Row, R0, R1):-
+height_percent_constraint(Row, PercentOfHeight, RR0, RR1, R0, R1):-
     RR0 #\= 1,
-    RR1 #\= Col,
+    RR1 #\= Row,
     R0 #= RR0,
     R1 #= RR0 + Row * PercentOfHeight div 100 - 1,
     R1 #=< Row.
 height_percent_constraint(Row, PercentOfHeight, RR0, RR1, R0, R1):-
     RR0 #\= 1,
-    RR1 #\= Col,
+    RR1 #\= Row,
     MIDDLE #= Row div 2,
     Height #= Row * PercentOfHeight div 100,
     Heightdiv2 #= Height div 2,
@@ -291,21 +364,21 @@ height_percent_constraint(Row, PercentOfHeight, RR0, RR1, R0, R1):-
     R1 #=< Row.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Limited the R0, R1, C0 and C1 base on height.
-height_constraint(Row, Height, 1, RR1, R0, R1):-
+height_constraint(Row, Height, 1, _, R0, R1):-
     R0 #= 1,
     R1 #= Height #<== Height #=< Row.
-height_constraint(Row, Height, RR0, Row, R0, R1):-
+height_constraint(Row, Height, _, Row, R0, R1):-
     R1 #= Row,
     R0 #= Row+1 - Height #<== Row+1 - Height #> 0.
 height_constraint(Row, Height, RR0, RR1, R0, R1):-
     RR0 #\= 1,
-    RR1 #\= Col,
+    RR1 #\= Row,
     R0 #= RR0,
     R1 #= RR0 + Height - 1,
     R1 #=< Row.
 height_constraint(Row, Height, RR0, RR1, R0, R1):-
     RR0 #\= 1,
-    RR1 #\= Col,
+    RR1 #\= Row,
     MIDDLE #= Row div 2,
     Heightdiv2 #= Height div 2,
     R0 #= MIDDLE-Heightdiv2+1,
@@ -314,10 +387,10 @@ height_constraint(Row, Height, RR0, RR1, R0, R1):-
     R1 #=< Row.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Limited the R0, R1, C0 and C1 base on width.
-width_constraint(Col, Width, 1, CC1, C0, C1):-
+width_constraint(Col, Width, 1, _, C0, C1):-
     C0 #= 1,
     C1 #= Width #<== Width #=< Col.
-width_constraint(Col, Width, CC0, Col, C0, C1):-
+width_constraint(Col, Width, _, Col, C0, C1):-
    C1 #= Col,
    C0 #= Col+1 - Width #<== Col+1 - Width #> 0.
 width_constraint(Col, Width, CC0, CC1, C0, C1):-
@@ -341,18 +414,6 @@ size_constraint(Row, Col, Width, Height, RR0, RR1, CC0, CC1, R0, R1, C0, C1):-
     width_constraint(Col, Width, CC0, CC1, C0, C1),
     height_constraint(Row, Height, RR0, RR1, R0, R1).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Limited the R0, R1, C0 and C1 base on aspect. we have one of the height or width. we can use any of them.
-aspect_constraint_width(Size, Row, Col, Width, Height, RR0, CC0, R0, R1, C0, C1):-
-    R0 #= RR0,
-    C0 #= CC0,
-    C1 #= Size + C0 #<== Size + C0 #=< Col,
-    R1 #= Size div Width * Height + RR0 #<== Size div Width * Height + RR0 #=< Row.
-aspect_constraint_height(Size, Row, Col, Width, Height, RR0, CC0, R0, R1, C0, C1):-
-    R0 #= RR0,
-    C0 #= CC0,
-    R1 #= Size + R0 #<== Size + R0 #=< Row,
-    C1 #= Size * Width div Height + CC0 #<== Size * Width div Height + CC0 #=< Col.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Calculate the size of boxes based on the data we recieved from users.
 gettingsizes(_, _, [], _, _, _, _, []).
 gettingsizes(Row, Col, [[Name, _]|Properties], R0, R1, C0, C1, [H|T]):-
@@ -361,6 +422,14 @@ gettingsizes(Row, Col, [[Name, _]|Properties], R0, R1, C0, C1, [H|T]):-
     gettingsizes(Row, Col, Properties, R0, R1, C0, C1, T).
 gettingsizes(Row, Col, [[Name, _]|Properties], R0, R1, C0, C1, [H|T]):-
     Name = source_command,
+    H = sizeofbox(R0, R1, C0, C1),
+    gettingsizes(Row, Col, Properties, R0, R1, C0, C1, T).
+gettingsizes(Row, Col, [[Name|_]|Properties], R0, R1, C0, C1, [H|T]):-
+    Name = ref_command,
+    H = sizeofbox(R0, R1, C0, C1),
+    gettingsizes(Row, Col, Properties, R0, R1, C0, C1, T).
+gettingsizes(Row, Col, [[Name|_]|Properties], R0, R1, C0, C1, [H|T]):-
+    Name = adjacency_command,
     H = sizeofbox(R0, R1, C0, C1),
     gettingsizes(Row, Col, Properties, R0, R1, C0, C1, T).
 gettingsizes(Row, Col, [[Name, Value]|Properties], _, _, _, _, [H|T]):-
@@ -398,22 +467,35 @@ gettingsizes(Row, Col, [[Name, Value]|Properties], RR0, RR1, CC0, CC1, [H|T]):-
     width_constraint(Col, Value, CC0, CC1, C0, C1),
     H = sizeofbox(RR0, RR1, C0, C1),
     gettingsizes(Row, Col, Properties, RR0, RR1, C0, C1, T).
-gettingsizes(Row, Col, [[Name, Value1, Value2]|Properties], RR0, RR1, CC0, CC1, [H|T]):-
+gettingsizes(Row, Col, [[Name, Value1, Value2]|Properties], RR0, _, CC0, CC1, [H|T]):-
     Name = aspect_command,
-    Size #= CC1-CC0
-    aspect_constraint_width(Size, Row, Col, Value1, Value2, RR0, CC0, R0, R1, C0, C1)
+    Size #= CC1-CC0,
+    aspect_constraint_width(Size, Row, Col, Value1, Value2, RR0, CC0, R0, R1, C0, C1),
     H = sizeofbox(R0, R1, C0, C1),
     gettingsizes(Row, Col, Properties, R0, R1, C0, C1, T).
 % Ref and adj is not available yet.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-test(File, Output, Info, Size):-
-    input(File, Output),
+%test(File, Output, Info, Size):-
+%    input(File, Output),
+%    phrase(dcg_parser(Info), Output),
+%    generate_ID(Info, ID),
+%    boxes_generator(Info, ID, Boxes),
+%    dimensionofposter(Row, Col, Boxes),
+%    delete_poster_from_boxes(Boxes, Boxes2),
+%    gettingsizes(Row, Col, [[position_command, 'top-edge'],[width_command_percent, 100],[content_command, 'Volcanoes']], 1, 1, 1, 1, Size).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Make it work
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+run(NameOfPoster, NameOfHTMLFile, R) :-
+    input(NameOfPoster, Output),
     phrase(dcg_parser(Info), Output),
     generate_ID(Info, ID),
     boxes_generator(Info, ID, Boxes),
     dimensionofposter(Row, Col, Boxes),
     delete_poster_from_boxes(Boxes, Boxes2),
-    gettingsizes(Row, Col, [[position_command, 'top-edge'],[width_command_percent, 100],[content_command, 'Volcanoes']], 1, 1, 1, 1, Size).
+    boxes_generator2(Boxes2, Row, Col, Boxes3),
+    layout_boxes(Boxes3, R).
+%    output(Boxes3, NameOfHTMLFile, Col, Row).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %getfromref(ref, Boxes, )
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
