@@ -226,32 +226,38 @@ gettingcontent([[Name, Value]|Properties], [H|T]):-
 gettingcontent([[Name|_]|Properties], [H|T]):-
     Name \= source_command,
     Name \= content_command,
-    gettingcontent(Properties, [H|T]).
+    H = empty,
+    gettingcontent(Properties, T).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+non_empty([H|_], Content):-
+    H \= empty,
+    Content = H.
+non_empty([H|Contents], Content):-
+    H = empty,
+    non_empty(Contents, Content).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Extract the Content from the Box. If the box is a text or header type, this content should be string of the
 % associated textual content. If the box is an image type, this should be the path to the image file.
-box_content([_, _, Properties|_], Content):-
+box_content([_, _, Properties, _, _], Content):-
     gettingcontent(Properties, Contents),
-    last(Contents, Content).
+    non_empty(Contents, Content).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Boxes is a list of boxes corresponding tothe Layout.
-%layout_boxes([Layout_head|Layout_Tail], [Box|Boxes]):-
-%    box_id(Layout_head, Id),
-%    box_type(Layout_head, Type),
-%    box_col(Layout_head, C0, C1),
-%    box_row(Layout_head, R0, R1),
-%    box_content(Layout_head, Content),
-%    Box = box(Id, Type, C0, C1, R0, R1, Content),
-%    layout_boxes(Layout_Tail, Boxes).
 layout_boxes([], []).
-layout_boxes([Layout_head|Layout_Tail], [H|T]):-
-    box_id(Layout_head, Id),
-    box_type(Layout_head, Type),
-    box_col(Layout_head, C0, C1),
-    box_row(Layout_head, R0, R1),
-    box_content(Layout_head, Content),
-    H = box(Id, Type, C0, C1, R0, R1, Content),
-    layout_boxes(Layout_Tail, T).
+layout_boxes([Layout_head|Layout_Tail], [boxbox(Id, Type, C0, C1, R0, R1, Content)|Boxes]):-
+    box_id(Layout_head, Idx),
+    box_type(Layout_head, Typex),
+    box_col(Layout_head, C0x, C1x),
+    box_row(Layout_head, R0x, R1x),
+    box_content(Layout_head, Contentx),
+    Id = Idx,
+    Type = Typex,
+    C0 = C0x,
+    C1 = C1x,
+    R0 = R0x,
+    R1 = R1x,
+    Content = Contentx,
+    layout_boxes(Layout_Tail, Boxes).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Limited the R0, R1, C0 and C1 base on aspect. we have one of the height or width. we can use any of them.
 aspect_constraint_width(Size, Row, Col, Width, Height, RR0, CC0, R0, R1, C0, C1):-
@@ -475,18 +481,9 @@ gettingsizes(Row, Col, [[Name, Value1, Value2]|Properties], RR0, _, CC0, CC1, [H
     gettingsizes(Row, Col, Properties, R0, R1, C0, C1, T).
 % Ref and adj is not available yet.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%test(File, Output, Info, Size):-
-%    input(File, Output),
-%    phrase(dcg_parser(Info), Output),
-%    generate_ID(Info, ID),
-%    boxes_generator(Info, ID, Boxes),
-%    dimensionofposter(Row, Col, Boxes),
-%    delete_poster_from_boxes(Boxes, Boxes2),
-%    gettingsizes(Row, Col, [[position_command, 'top-edge'],[width_command_percent, 100],[content_command, 'Volcanoes']], 1, 1, 1, 1, Size).
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Make it work
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-run(NameOfPoster, NameOfHTMLFile, R) :-
+run(NameOfPoster, NameOfHTMLFile) :-
     input(NameOfPoster, Output),
     phrase(dcg_parser(Info), Output),
     generate_ID(Info, ID),
@@ -494,24 +491,6 @@ run(NameOfPoster, NameOfHTMLFile, R) :-
     dimensionofposter(Row, Col, Boxes),
     delete_poster_from_boxes(Boxes, Boxes2),
     boxes_generator2(Boxes2, Row, Col, Boxes3),
-    layout_boxes(Boxes3, R).
-%    output(Boxes3, NameOfHTMLFile, Col, Row).
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%getfromref(ref, Boxes, )
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Limited the R0, R1, C0 and C1 base on adjacency.
-%adjacency_constraint(Row, Col, Adjacency, Ref_box, Rf0, Rf1, Cf0, Cf1, R0, R1, C0, C1).
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%find_position([_, _, List], yes):-
-%    append(List, NewList),
-%    member(position_command, NewList).
-%find_position([_], no).
-%
-%find_position([_, _, List], yes):-
-%    append(List, NewList),
-%    member(width_command_percent, NewList).
-%find_position([_], no).
-%
-%box_col([_, _, List], C0, C1):-
-%    append(List, C0),
+    layout_boxes(Boxes3, R),
+    output(R, NameOfHTMLFile, Col, Row).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
