@@ -150,7 +150,6 @@ run_dcg(File, Output, Info):-
     input(File, Output),
     phrase(dcg_parser(Info), Output).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Constraints part
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Generat the IDs.
@@ -167,6 +166,8 @@ boxes_generator([Head|Tail], [IDH|IDT], [H|T]):-
     boxes_generator(Tail, IDT, T).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 delete_poster_from_boxes([_|Boxes], Boxes).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+dimensionofposter(Row, Col, [[_, _, [[_, Row, Col]|_]]|_]).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Checking if the first asset is the poster and otherwise return false
 check_if_first_asset_is_poster([[AssetName|_]|_]):-
@@ -191,13 +192,6 @@ box_type([_, Type|_], header):-
 box_id([ID, _|_], Id):-
     ID #= Id.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Extract the start (C0) and end (C1) indices from the Box. The start index is inclusive and the end index is exclusive,
-% i.e. [R0, R1).
-%get_the_properties([[_, _, List]|Tail], Result):-
-% get row and column values
-%getrowcol([[_, [[_, Row, Col], [_]]]|_], Row, Col).
-%getrowcol([[_, [[_], [_, Row, Col]]]|_], Row, Col).
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Limited the R0, R1, C0 and C1 base on position.
 available_position_int('top-edge', 1).
 available_position_int('bottom-edge', 2).
@@ -208,108 +202,146 @@ available_position_int('top-right', 6).
 available_position_int('bottom-left', 7).
 available_position_int('bottom-right', 8).
 position_constraint(Row, Col, 'top-edge', R0, R1, C0, C1):-
-    R0 in 1..Row,
-    R1 in 1..Row,
-    C0 in 1..Col,
-    C1 in 1..Col,
-    available_position_int('top-edge', Num),
-    R0 #= 1 #/\ R1 #> 1 #<== Num #= 1.
+    R1 #= 10 * Row div 100,
+    C0 #= 1,
+    C1 #= 10 * Col div 100,
+    R0 #= 1.
 position_constraint(Row, Col, 'bottom-edge', R0, R1, C0, C1):-
-    R0 in 1..Row,
-    R1 in 1..Row,
-    C0 in 1..Col,
-    C1 in 1..Col,
-    available_position_int('bottom-edge', Num),
-    R0 #= Row #/\ R1 #< Row #<== Num #= 2.
+    R1 #= Row,
+    R0 #= Row - 10 * Row div 100,
+    C0 #= 1,
+    C1 #= 10 * Col div 100.
 position_constraint(Row, Col, 'left-edge', R0, R1, C0, C1):-
-    R0 in 1..Row,
-    R1 in 1..Row,
-    C0 in 1..Col,
-    C1 in 1..Col,
-    available_position_int('left-edge', Num),
-    C0 #= 1 #/\ C1 #> 1 #<== Num #= 3.
+    R0 #= 1,
+    R1 #= 10 * Row div 100,
+    C0 #= 1,
+    C1 #= 10 * Col div 100.
 position_constraint(Row, Col, 'right-edge', R0, R1, C0, C1):-
-    R0 in 1..Row,
-    R1 in 1..Row,
-    C0 in 1..Col,
-    C1 in 1..Col,
-    available_position_int('right-edge', Num),
-    C0 #= Col #/\ C1 #< Col #<== Num #= 4.
+    R0 #= 1,
+    R1 #= 10 * Row div 100,
+    C1 #= Col,
+    C0 #= Col - 10 * Col div 100.
 position_constraint(Row, Col, 'top-left', R0, R1, C0, C1):-
-    R0 in 1..Row,
-    R1 in 1..Row,
-    C0 in 1..Col,
-    C1 in 1..Col,
-    available_position_int('top-left', Num),
-    R0 #= 1 #/\ R1 #> 1, C0 #= 1, C1 #> 1 #<== Num #= 5.
+    R0 #= 1,
+    R1 #= 10 * Row div 100,
+    C0 #= 1,
+    C1 #= 10 * Col div 100.
 position_constraint(Row, Col, 'top-right', R0, R1, C0, C1):-
-    R0 in 1..Row,
-    R1 in 1..Row,
-    C0 in 1..Col,
-    C1 in 1..Col,
-    available_position_int('top-right', Num),
-    R0 #= 1 #/\ R1 #> 1, C0 #= Col, C1 #< Col #<== Num #= 6.
+    R0 #= 1,
+    R1 #= 10 * Row div 100,
+    C1 #= Col,
+    C0 #= Col - 10 * Col div 100.
 position_constraint(Row, Col, 'bottom-left', R0, R1, C0, C1):-
-    R0 in 1..Row,
-    R1 in 1..Row,
-    C0 in 1..Col,
-    C1 in 1..Col,
-    available_position_int('bottom-left', Num),
-    R0 #= Row #/\ R1 #< Row, C0 #= 1, C1 #> 1 #<== Num #= 7.
+    R1 #= Row,
+    R0 #= Row - 10 * Row div 100,
+    C0 #= 1,
+    C1 #= 10 * Col div 100.
 position_constraint(Row, Col, 'bottom-right', R0, R1, C0, C1):-
-    R0 in 1..Row,
-    R1 in 1..Row,
-    C0 in 1..Col,
-    C1 in 1..Col,
-    available_position_int('bottom-right', Num),
-    R0 #= Row #/\ R1 #< Row, C0 #= Col, C1 #< Col #<== Num #= 8.
+    R1 #= Row,
+    R0 #= Row - 10 * Row div 100,
+    C1 #= Col,
+    C0 #= Col - 10 * Col div 100.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Limited the R0, R1, C0 and C1 base on width in percent.
+width_percent_constraint(Col, PercentOfWidth, 1, CC1, C0, C1):-
+    C1 #=Col * PercentOfWidth div 100 #<== Col * PercentOfWidth div 100 #=< Col,
+    C0 #= 1.
+width_percent_constraint(Col, PercentOfWidth, CC0, Col, C0, C1):-
+    C1 #= Col,
+    C0 #= Col+1 - Col * PercentOfWidth div 100 #<== Col+1 - Col * PercentOfWidth div 100 #> 0.
 width_percent_constraint(Col, PercentOfWidth, CC0, CC1, C0, C1):-
-    CC0 #< CC1,
+    CC0 #\= 1,
+    CC1 #\= Col,
     C0 #= CC0,
-    C1 #= CC0 + Col * PercentOfWidth div 100 #<== CC0 + Col * PercentOfWidth div 100 #=< Col.
+    C1 #= CC1 + Col * PercentOfWidth div 100 - 1,
+    C1 #=< Col.
 width_percent_constraint(Col, PercentOfWidth, CC0, CC1, C0, C1):-
-    CC0 #> CC1,
-    C0 #= CC1,
-    C1 #= CC1 + Col * PercentOfWidth div 100 #<== CC1 + Col * PercentOfWidth div 100 #=< Col.
+    CC0 #\= 1,
+    CC1 #\= Col,
+    MIDDLE #= Col div 2,
+    Width #= Col * PercentOfWidth div 100,
+    Widthdiv2 #= Width div 2,
+    C0 #= MIDDLE-Widthdiv2+1,
+    C1 #= MIDDLE+Widthdiv2-1,
+    C0 #> 0,
+    C1 #=< Col.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Limited the R0, R1, C0 and C1 base on height in percent.
-height_percent_constraint(Row, PercentOfHeight, RR0, RR1, R0, R1):-
-    RR0 #< RR1,
+height_percent_constraint(Row, PercentOfHeight, 1, RR1, R0, R1):-
+    R0 #= 1,
+    R1 #= Row * PercentOfHeight div 100 #<== Row * PercentOfHeight div 100 #=< Row.
+height_percent_constraint(Row, PercentOfHeight, RR0, Row, R0, R1):-
+    R1 #= Row,
+    R0 #= Row+1 - Row * PercentOfHeight div 100 #<== Row+1 - Row * PercentOfHeight div 100 #> 0.
+height_percent_constraint(Row, PercentOfHeight, RR0, Row, R0, R1):-
+    RR0 #\= 1,
+    RR1 #\= Col,
     R0 #= RR0,
-    R1 #= RR0 + Row * PercentOfHeight div 100 #<== RR0 + Row * PercentOfHeight div 100 #=< Row.
+    R1 #= RR0 + Row * PercentOfHeight div 100 - 1,
+    R1 #=< Row.
 height_percent_constraint(Row, PercentOfHeight, RR0, RR1, R0, R1):-
-    RR0 #> RR1,
-    R0 #= RR1,
-    R1 #= RR1 + Row * PercentOfHeight div 100 #<== RR1 + Row * PercentOfHeight div 100 #=< Row.
+    RR0 #\= 1,
+    RR1 #\= Col,
+    MIDDLE #= Row div 2,
+    Height #= Row * PercentOfHeight div 100,
+    Heightdiv2 #= Height div 2,
+    R0 #= MIDDLE-Heightdiv2+1,
+    R1 #= MIDDLE+Heightdiv2-1,
+    R0 #> 0,
+    R1 #=< Row.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Limited the R0, R1, C0 and C1 base on height.
+height_constraint(Row, Height, 1, RR1, R0, R1):-
+    R0 #= 1,
+    R1 #= Height #<== Height #=< Row.
+height_constraint(Row, Height, RR0, Row, R0, R1):-
+    R1 #= Row,
+    R0 #= Row+1 - Height #<== Row+1 - Height #> 0.
 height_constraint(Row, Height, RR0, RR1, R0, R1):-
-    RR0 #< RR1,
+    RR0 #\= 1,
+    RR1 #\= Col,
     R0 #= RR0,
-    R1 #= RR0 + Height #<== RR0 + Height #=< Row.
+    R1 #= RR0 + Height - 1,
+    R1 #=< Row.
 height_constraint(Row, Height, RR0, RR1, R0, R1):-
-    RR0 #> RR1,
-    R0 #= RR1,
-    R1 #= RR1 + Height #<== RR1 + Height #=< Row.
+    RR0 #\= 1,
+    RR1 #\= Col,
+    MIDDLE #= Row div 2,
+    Heightdiv2 #= Height div 2,
+    R0 #= MIDDLE-Heightdiv2+1,
+    R1 #= MIDDLE+Heightdiv2-1,
+    R0 #> 0,
+    R1 #=< Row.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Limited the R0, R1, C0 and C1 base on width.
+width_constraint(Col, Width, 1, CC1, C0, C1):-
+    C0 #= 1,
+    C1 #= Width #<== Width #=< Col.
+width_constraint(Col, Width, CC0, Col, C0, C1):-
+   C1 #= Col,
+   C0 #= Col+1 - Width #<== Col+1 - Width #> 0.
 width_constraint(Col, Width, CC0, CC1, C0, C1):-
-    CC0 #< CC1,
+    CC0 #\= 1,
+    CC1 #\= Col,
     C0 #= CC0,
-    C1 #= CC0 + Width #<== CC0 + Width #=< Col.
+    C1 #= CC0 + Width - 1,
+    C1 #=< Col.
 width_constraint(Col, Width, CC0, CC1, C0, C1):-
-    CC0 #> CC1,
-    C0 #= CC1,
-    C1 #= CC1 + Width #<== CC1 + Width #=< Col.
+    CC0 #\= 1,
+    CC1 #\= Col,
+    MIDDLE #= Col div 2,
+    Heightdiv2 #= Width div 2,
+    C0 #= MIDDLE-Heightdiv2+1,
+    C1 #= MIDDLE+Heightdiv2-1,
+    C0 #> 0,
+    C1 #=< Col.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Limited the R0, R1, C0 and C1 base on size.
 size_constraint(Row, Col, Width, Height, RR0, RR1, CC0, CC1, R0, R1, C0, C1):-
     width_constraint(Col, Width, CC0, CC1, C0, C1),
     height_constraint(Row, Height, RR0, RR1, R0, R1).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Limited the R0, R1, C0 and C1 base on aspect. we have one of the height or width.
+% Limited the R0, R1, C0 and C1 base on aspect. we have one of the height or width. we can use any of them.
 aspect_constraint_width(Size, Row, Col, Width, Height, RR0, CC0, R0, R1, C0, C1):-
     R0 #= RR0,
     C0 #= CC0,
@@ -320,6 +352,70 @@ aspect_constraint_height(Size, Row, Col, Width, Height, RR0, CC0, R0, R1, C0, C1
     C0 #= CC0,
     R1 #= Size + R0 #<== Size + R0 #=< Row,
     C1 #= Size * Width div Height + CC0 #<== Size * Width div Height + CC0 #=< Col.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Calculate the size of boxes based on the data we recieved from users.
+gettingsizes(_, _, [], _, _, _, _, []).
+gettingsizes(Row, Col, [[Name, _]|Properties], R0, R1, C0, C1, [H|T]):-
+    Name = content_command,
+    H = sizeofbox(R0, R1, C0, C1),
+    gettingsizes(Row, Col, Properties, R0, R1, C0, C1, T).
+gettingsizes(Row, Col, [[Name, _]|Properties], R0, R1, C0, C1, [H|T]):-
+    Name = source_command,
+    H = sizeofbox(R0, R1, C0, C1),
+    gettingsizes(Row, Col, Properties, R0, R1, C0, C1, T).
+gettingsizes(Row, Col, [[Name, Value]|Properties], _, _, _, _, [H|T]):-
+    Name = position_command,
+    position_constraint(Row, Col, Value, RX0, RX1, CX0, CX1),
+    H = sizeofbox(RX0, RX1, CX0, CX1),
+    gettingsizes(Row, Col, Properties, RX0, RX1, CX0, CX1, T).
+gettingsizes(Row, Col, [[Name, Value1, Value2]|Properties], RR0, RR1, CC0, CC1, [H|T]):-
+    Name = size_command,
+    size_constraint(Row, Col, Value1, Value2, RR0, RR1, CC0, CC1, R0, R1, C0, C1),
+    H = sizeofbox(R0, R1, C0, C1),
+    gettingsizes(Row, Col, Properties, R0, R1, C0, C1, T).
+gettingsizes(Row, Col, [[Name, Value]|Properties], RR0, RR1, CC0, CC1, [H|T]):-
+    Name = width_command_percent,
+    width_percent_constraint(Col, Value, CC0, CC1, C0, C1),
+    H = sizeofbox(RR0, RR1, C0, C1),
+    gettingsizes(Row, Col, Properties, RR0, RR1, C0, C1, T).
+gettingsizes(Row, Col, [[Name, Value]|Properties], RR0, RR1, CC0, CC1, [H|T]):-
+    Name = height_command_percent,
+    height_percent_constraint(Row, Value, RR0, RR1, R0, R1),
+    H = sizeofbox(R0, R1, CC0, CC1),
+    gettingsizes(Row, Col, Properties, R0, R1, CC0, CC1, T).
+gettingsizes(Row, Col, [[Name, Value]|Properties], RR0, RR1, CC0, CC1, [H|T]):-
+    Name = height_command_absolute,
+    height_constraint(Row, Value, RR0, RR1, R0, R1),
+    H = sizeofbox(R0, R1, CC0, CC1),
+    gettingsizes(Row, Col, Properties, R0, R1, CC0, CC1, T).
+gettingsizes(Row, Col, [[Name, Value]|Properties], RR0, RR1, CC0, CC1, [H|T]):-
+    Name = width_command_absolute,
+    width_constraint(Col, Value, CC0, CC1, C0, C1),
+    H = sizeofbox(RR0, RR1, C0, C1),
+    gettingsizes(Row, Col, Properties, RR0, RR1, C0, C1, T).
+gettingsizes(Row, Col, [[Name, Value]|Properties], RR0, RR1, CC0, CC1, [H|T]):-
+    Name = width_command_absolute,
+    width_constraint(Col, Value, CC0, CC1, C0, C1),
+    H = sizeofbox(RR0, RR1, C0, C1),
+    gettingsizes(Row, Col, Properties, RR0, RR1, C0, C1, T).
+gettingsizes(Row, Col, [[Name, Value1, Value2]|Properties], RR0, RR1, CC0, CC1, [H|T]):-
+    Name = aspect_command,
+    Size #= CC1-CC0
+    aspect_constraint_width(Size, Row, Col, Value1, Value2, RR0, CC0, R0, R1, C0, C1)
+    H = sizeofbox(R0, R1, C0, C1),
+    gettingsizes(Row, Col, Properties, R0, R1, C0, C1, T).
+% Ref and adj is not available yet.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+test(File, Output, Info, Size):-
+    input(File, Output),
+    phrase(dcg_parser(Info), Output),
+    generate_ID(Info, ID),
+    boxes_generator(Info, ID, Boxes),
+    dimensionofposter(Row, Col, Boxes),
+    delete_poster_from_boxes(Boxes, Boxes2),
+    gettingsizes(Row, Col, [[position_command, 'top-edge'],[width_command_percent, 100],[content_command, 'Volcanoes']], 1, 1, 1, 1, Size).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%getfromref(ref, Boxes, )
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Limited the R0, R1, C0 and C1 base on adjacency.
 %adjacency_constraint(Row, Col, Adjacency, Ref_box, Rf0, Rf1, Cf0, Cf1, R0, R1, C0, C1).
